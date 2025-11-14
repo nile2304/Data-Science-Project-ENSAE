@@ -132,4 +132,3 @@ def get_ISOcodes(url):
     rows = table_body.find_all('tr')
     
     return rows
-
