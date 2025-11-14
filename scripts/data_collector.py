@@ -1,7 +1,9 @@
 import requests
+import bs4
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+import numpy as np
 
 class WorldBankData:
     """
@@ -62,27 +64,71 @@ class WorldBankData:
         # Couleurs personnalisées
         if colors:
             for i, country in enumerate(df.columns):
-                plt.plot(df.index, df[country], marker='o', label=country, color=colors[i % len(colors)])
+                plt.plot(df.index, np.log(df[country]), marker='x', label=country, color=colors[i])
         else:
             for country in df.columns:
-                plt.plot(df.index, df[country], marker='o', label=country)
+                plt.plot(df.index, np.log(df[country]), marker='x', label=country)
 
         plt.title(title if title else indicator_name, fontsize=16)
         plt.xlabel("Année", fontsize=12)
         plt.ylabel(indicator_name, fontsize=12)
         plt.xticks(df.index, rotation=45)
         plt.grid(True, linestyle='--', alpha=0.6)
-        plt.legend(title="Pays")
         plt.tight_layout()
         plt.show()
 
+def get_rawlandlockedCountries(url):
+    """
+    Scrapes a Wikipedia table containing countries and their coastline lengths.
 
+    Parameters
+    ----------
+    url : str
+        The URL of the Wikipedia page containing the table of countries and their coastline lengths.
 
-wb = WorldBankData()
+    Returns
+    -------
+    list
+    A list of BeautifulSoup 'tr' elements representing rows of the HTML table.
+    """
+    
+    requests_text = requests.get(
+        url,
+        headers={"User-Agent": "Python for data science tutorial"}
+        ).content
+    
+    # Récupération des données du tableau depuis la page Wikipédia
+    page = bs4.BeautifulSoup(requests_text,"lxml")
+    countries_table = page.find("table") 
+    table_body = countries_table.find('tbody')
+    rows = table_body.find_all('tr')
+    
+    return rows
 
-# --- Télécharger le PIB réel pour GB, France et Allemagne ---
-df_pib = wb.get_indicator("PIB_reel", ["GB", "FR", "DE"], start=2000, end=2024)
-print(df_pib.tail())
+def get_ISOcodes(url):
 
-# --- Tracer le PIB réel avec des couleurs personnalisées ---
-wb.plot("PIB_reel", title="Évolution du PIB réel (2015 USD)", colors=["red", "green", "blue"])
+    """
+    Scrapes a Wikipedia table containing countries and their ISO codes.
+
+    Parameters
+    ----------
+    url : str
+        The URL of the Wikipedia page containing the table of countries and their ISO codes.
+
+    Returns
+    -------
+    list:
+        A list of BeautifulSoup 'tr' elements representing rows of the HTML table.
+    """
+
+    requests_text = requests.get(
+    url,
+    headers={"User-Agent": "Python for data science tutorial"}
+    ).content
+
+    page = bs4.BeautifulSoup(requests_text, "lxml")
+    iso_table= page.find('table')
+    table_body = iso_table.find('tbody')
+    rows = table_body.find_all('tr')
+    
+    return rows
