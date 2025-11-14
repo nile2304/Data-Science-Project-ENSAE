@@ -77,17 +77,6 @@ class WorldBankData:
         plt.tight_layout()
         plt.show()
 
-
-
-wb = WorldBankData()
-
-# --- Télécharger le PIB réel pour GB, France et Allemagne ---
-df_pib = wb.get_indicator("PIB_reel", ["GB", "FR", "DE"], start=2000, end=2024)
-print(df_pib.tail())
-
-# --- Tracer le PIB réel avec des couleurs personnalisées ---
-wb.plot("PIB_reel", title="Évolution du PIB réel (2015 USD)", colors=["red", "green", "blue"])
-
 def get_landlockedCountries(url):
 
     """
@@ -143,7 +132,7 @@ def get_landlockedCountries(url):
 
 
 
-def getISO_codes(url):
+def get_ISOcodes(url):
 
     """
     Scrapes a Wikipedia table containing ISO country codes, cleans the data, 
@@ -179,21 +168,21 @@ def getISO_codes(url):
         cols = row.find_all('td')
         cols = [ele.text.strip() for ele in cols]
         if len(cols) > 0 : 
-            dico_ISO[cols[0]] = cols[:5] # Je ne sélectionne que les collones relatives aux frontières maritimes
+            dico_ISO[cols[0]] = cols[:5] # Je ne sélectionne que les colonnes qui contiennent les codes ISO
 
    
-    # Structuration dans un dataframe en suite
+    # Structuration dans un dataframe ensuite
     data_ISO = pd.DataFrame.from_dict(dico_ISO,orient='index')
     data_ISO = data_ISO.reset_index()
 
-    columns_to_drop = data_ISO.columns[[0,2,3]] # J'enlève les données de la CIA. Pas très pertinentes 
+    columns_to_drop = data_ISO.columns[[0,2,3]] # J'enlève les colonnes inutiles 
     data_ISO = data_ISO.drop(columns=columns_to_drop,axis=1)
-    data_ISO = data_ISO.rename(columns={0: "Pays", 2: "ISO-2", 4: "ISO-3"})
+    data_ISO = data_ISO.rename(columns={0: "Pays", 3: "ISO-2", 4: "ISO-3"})
     
     return data_ISO
     
 # iso_url = "https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes"
-# data = getISO_codes(iso_url)
+# data = get_ISOcodes(iso_url)
 # print(data.head())
 
 # url_Landlocked = "https://en.wikipedia.org/wiki/List_of_countries_by_length_of_coastline"
