@@ -75,11 +75,15 @@ def clean_ISOData(rawData):
     data_ISO = pd.DataFrame.from_dict(dico_ISO,orient='index')
     data_ISO = data_ISO.reset_index()
 
-    columns_to_drop = data_ISO.columns[[0,2,3]] # J'enlève les colonnes inutiles 
+    columns_to_drop = data_ISO.columns[[0,2]] # J'enlève les colonnes inutiles 
     data_ISO = data_ISO.drop(columns=columns_to_drop,axis=1)
     data_ISO = data_ISO.rename(columns={0: "Pays", 3: "ISO-2", 4: "ISO-3"})
 
     # Certaines lignes inutiles à enlever (lignes vides qui renvoient vers d'autres dénominations du pays en question)
-    data_ISO = data_ISO.dropna()
+    # Ou même des régions qui sont sous la souveraineté d'un pays. On les enlève.
+
+    data_ISO = data_ISO.dropna() # Enlever les lignes vides
+    data_ISO = data_ISO[data_ISO[2] == 'UN member'] # Ne garder que les pays membres de l'ONU
+    data_ISO = data_ISO.drop(columns=[2],axis=1)
     
     return data_ISO

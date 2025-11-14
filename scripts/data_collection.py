@@ -3,6 +3,7 @@ import bs4
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+import numpy as np
 
 class WorldBankData:
     """
@@ -63,25 +64,18 @@ class WorldBankData:
         # Couleurs personnalisées
         if colors:
             for i, country in enumerate(df.columns):
-                plt.plot(df.index, df[country], marker='o', label=country, color=colors[i % len(colors)])
+                plt.plot(df.index, np.log(df[country]), marker='x', label=country, color=colors[i])
         else:
             for country in df.columns:
-                plt.plot(df.index, df[country], marker='o', label=country)
+                plt.plot(df.index, np.log(df[country]), marker='x', label=country)
 
         plt.title(title if title else indicator_name, fontsize=16)
         plt.xlabel("Année", fontsize=12)
         plt.ylabel(indicator_name, fontsize=12)
         plt.xticks(df.index, rotation=45)
-        plt.grid(True, linestyle='--', alpha=0.6)
-        plt.legend(title="Pays")
+        plt.grid(True, linestyle='--', alpha=0.6
         plt.tight_layout()
         plt.show()
-
-wb = WorldBankData()
-
-# --- Télécharger le PIB réel pour GB, France et Allemagne ---
-df_pib = wb.get_indicator("PIB_reel", ["AE", "FR", "DE"], start=2000, end=2024)
-print(df_pib.tail())
 
 def get_rawlandlockedCountries(url):
     """
@@ -110,8 +104,6 @@ def get_rawlandlockedCountries(url):
     rows = table_body.find_all('tr')
     
     return rows
-
-
 
 def get_ISOcodes(url):
 
