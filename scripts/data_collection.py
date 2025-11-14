@@ -77,23 +77,25 @@ class WorldBankData:
         plt.tight_layout()
         plt.show()
 
-def get_landlockedCountries(url):
+wb = WorldBankData()
 
+# --- Télécharger le PIB réel pour GB, France et Allemagne ---
+df_pib = wb.get_indicator("PIB_reel", ["AE", "FR", "DE"], start=2000, end=2024)
+print(df_pib.tail())
+
+def get_rawlandlockedCountries(url):
     """
-    Scrapes a Wikipedia table of countries and their coastline lengths
-    and returns a DataFrame containing only relevant columns. 
-    The resulting DataFrame includes country names and their coastline lengths (in kilometers).
+    Scrapes a Wikipedia table containing countries and their coastline lengths.
 
-    *** Parameters
+    Parameters
+    ----------
+    url : str
+        The URL of the Wikipedia page containing the table of countries and their coastline lengths.
 
-    url : str (The URL of the Wikipedia page containing the table of countries and their coastlines.)
-
-    *** Returns
-
-    pandas.DataFrame
-    A cleaned DataFrame with two columns:
-    - 'Pays': the name of each country (string)
-    - 'Coastline(km)': the length of its coastline in kilometers (numeric)
+    Returns
+    -------
+    list
+    A list of BeautifulSoup 'tr' elements representing rows of the HTML table.
     """
     
     requests_text = requests.get(
@@ -107,36 +109,14 @@ def get_landlockedCountries(url):
     table_body = countries_table.find('tbody')
     rows = table_body.find_all('tr')
     
-    # Regroupement des données dans un dictionnaire 
-    dico_countries = dict()
-    for row in rows:
-        cols = row.find_all('td')
-        cols = [ele.text.strip() for ele in cols]
-        if len(cols) > 0 : 
-            dico_countries[cols[0]] = cols[:3] # Je ne sélectionne que les collones relatives aux frontières maritimes
-
-    # Structuration dans un dataframe en suite
-    data_countries = pd.DataFrame.from_dict(dico_countries,orient='index')
-    data_countries = data_countries.reset_index()
-    columns_to_drop = data_countries.columns[[0,2]] # J'enlève les données de la CIA. Pas très pertinentes 
-    data_countries = data_countries.drop(columns=columns_to_drop,axis=1)
-    data_countries = data_countries.rename(columns={0: "Pays", 2: "Coastline(km)"})
-    
-    data_countries.drop(0,inplace=True) # Enlever la ligne contenant l'information sur tout le MONDE
-
-    # Convertir la colonne des frontières en valeurs numériques
-    data_countries["Coastline(km)"] = data_countries["Coastline(km)"].apply(lambda x: x.replace(',',''))
-    data_countries["Coastline(km)"] = pd.to_numeric(data_countries["Coastline(km)"])
-    
-    return data_countries
+    return rows
 
 
 
 def get_ISOcodes(url):
 
     """
-    Scrapes a Wikipedia table containing ISO country codes, cleans the data, 
-    and returns a structured DataFrame with each country's name and its corresponding ISO codes.
+    Scrapes a Wikipedia table containing countries and their ISO codes.
 
     Parameters
     ----------
@@ -145,11 +125,8 @@ def get_ISOcodes(url):
 
     Returns
     -------
-    pandas.DataFrame
-        A cleaned DataFrame with the following columns:
-        - 'Pays': the name of each country
-        - 'ISO-2': the two-letter ISO country code
-        - 'ISO-3': the three-letter ISO country code
+    list:
+        A list of BeautifulSoup 'tr' elements representing rows of the HTML table.
     """
 
     requests_text = requests.get(
@@ -161,31 +138,6 @@ def get_ISOcodes(url):
     iso_table= page.find('table')
     table_body = iso_table.find('tbody')
     rows = table_body.find_all('tr')
-
-    # Regroupement des données dans un dictionnaire 
-    dico_ISO = dict()
-    for row in rows:
-        cols = row.find_all('td')
-        cols = [ele.text.strip() for ele in cols]
-        if len(cols) > 0 : 
-            dico_ISO[cols[0]] = cols[:5] # Je ne sélectionne que les colonnes qui contiennent les codes ISO
-
-   
-    # Structuration dans un dataframe ensuite
-    data_ISO = pd.DataFrame.from_dict(dico_ISO,orient='index')
-    data_ISO = data_ISO.reset_index()
-
-    columns_to_drop = data_ISO.columns[[0,2,3]] # J'enlève les colonnes inutiles 
-    data_ISO = data_ISO.drop(columns=columns_to_drop,axis=1)
-    data_ISO = data_ISO.rename(columns={0: "Pays", 3: "ISO-2", 4: "ISO-3"})
     
-    return data_ISO
-    
-# iso_url = "https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes"
-# data = get_ISOcodes(iso_url)
-# print(data.head())
-
-# url_Landlocked = "https://en.wikipedia.org/wiki/List_of_countries_by_length_of_coastline"
-# data = get_landlockedCountries(url_Landlocked)
-# print(data.head(10))
+    return rows
 
