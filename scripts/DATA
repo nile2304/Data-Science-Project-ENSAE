@@ -3,21 +3,16 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-sns.set(style="whitegrid")  # style de base pour les graphiques
-
 class WorldBankData:
     """
-    Classe pour récupérer et visualiser des indicateurs World Bank
-    pour un ou plusieurs pays.
+    Classe pour récupérer et visualiser des indicateurs World Bank pour un ou plusieurs pays.
     """
 
     INDICATEURS = {
         "PIB_reel": "NY.GDP.MKTP.KD",
         "PIB_nominal": "NY.GDP.MKTP.CD",
         "PIB_par_habitant": "NY.GDP.PCAP.KD",
-        "Croissance_PIB": "NY.GDP.MKTP.KD.ZG",
         "Chomage": "SL.UEM.TOTL.ZS",
-        "Inflation": "FP.CPI.TOTL.ZG",
         "Exportations": "NE.EXP.GNFS.ZS",
         "Importations": "NE.IMP.GNFS.ZS"
     }
@@ -50,10 +45,13 @@ class WorldBankData:
         self.data[indicator_name] = df_pivot
         return df_pivot
 
+    sns.set_theme(style="whitegrid")  # style de base pour les graphiques
+
     def plot(self, indicator_name, title=None, figsize=(10,6), colors=None):
         """
         Trace un indicateur pour tous les pays chargés.
         """
+        
         if indicator_name not in self.data:
             raise ValueError(f"Aucune donnée pour {indicator_name}. Utilisez get_indicator() d'abord.")
 

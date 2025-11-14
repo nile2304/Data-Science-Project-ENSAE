@@ -3,6 +3,7 @@ import bs4
 import pandas as pd
 
 def get_landlockedCountries(url):
+
     """
     Scrapes a Wikipedia table of countries and their coastline lengths
     and returns a DataFrame containing only relevant columns. 
@@ -10,8 +11,7 @@ def get_landlockedCountries(url):
 
     *** Parameters
 
-    url : str
-    The URL of the Wikipedia page containing the table of countries and their coastlines.
+    url : str (The URL of the Wikipedia page containing the table of countries and their coastlines.)
 
     *** Returns
 
@@ -47,10 +47,8 @@ def get_landlockedCountries(url):
     data_countries = data_countries.drop(columns=columns_to_drop,axis=1)
     data_countries = data_countries.rename(columns={0: "Pays", 2: "Coastline(km)"})
     
-    
     data_countries.drop(0,inplace=True) # Enlever la ligne contenant l'information sur tout le MONDE
 
-    
     # Convertir la colonne des frontières en valeurs numériques
     data_countries["Coastline(km)"] = data_countries["Coastline(km)"].apply(lambda x: x.replace(',',''))
     data_countries["Coastline(km)"] = pd.to_numeric(data_countries["Coastline(km)"])
