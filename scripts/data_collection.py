@@ -73,7 +73,7 @@ class WorldBankData:
         plt.xlabel("Année", fontsize=12)
         plt.ylabel(indicator_name, fontsize=12)
         plt.xticks(df.index, rotation=45)
-        plt.grid(True, linestyle='--', alpha=0.6
+        plt.grid(True, linestyle='--', alpha=0.6)
         plt.tight_layout()
         plt.show()
 
