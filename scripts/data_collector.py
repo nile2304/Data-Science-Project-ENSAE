@@ -42,10 +42,12 @@ class WorldBankData:
         df = pd.DataFrame(data_json)[["country", "date", "value"]]
         df["country"] = df["country"].apply(lambda x: x["value"])
         df["date"] = df["date"].astype(int)
-
-        df_pivot = df.pivot(index="date", columns="country", values="value").sort_index()
-        self.data[indicator_name] = df_pivot
-        return df_pivot
+        
+        df.rename(columns={"value":"PIB"},inplace=True)
+        
+        self.data[indicator_name] = df
+        
+        return df
 
     sns.set_theme(style="whitegrid")  # style de base pour les graphiques
 
