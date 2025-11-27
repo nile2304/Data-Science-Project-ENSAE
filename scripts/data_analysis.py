@@ -1,4 +1,17 @@
 def check_missing_values(data,col):
+    """
+    Checks and prints the number and percentage of missing values in the specified column of the DataFrame,
+    along with the range of years and number of unique countries represented in the data.
+    Parameters
+    ----------
+    data : pandas.DataFrame
+        The DataFrame containing the data.
+    col : str
+    The name of the column to check for missing values.
+    Returns
+    -------
+    None
+        """
     
     missing_vals_number = data.isna().sum()[col]
 

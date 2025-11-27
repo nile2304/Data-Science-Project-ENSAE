@@ -1,6 +1,26 @@
 import matplotlib.pyplot as plt
 
 def plot_missing_values_per_year(data,col):
+    """
+    Plots the number of missing values per year for a specified column in a dataset.
+
+    This function groups the dataset by the 'date' column, counts the number of
+    missing values for the specified column in each year, and visualizes the result
+    as a bar chart. Each bar is annotated with the exact number of missing values.
+
+    Parameters
+    ----------
+    data : pandas.DataFrame
+        The input DataFrame containing a 'date' column and the column to analyze.
+    col : str
+        The name of the column for which missing values should be counted per year.
+
+    Returns
+    -------
+    None
+        The function displays a matplotlib bar plot but does not return any object.
+    """
+
     
     missing_values = data.groupby(["date"])[col].apply(lambda x: x.isna().sum())
 
@@ -18,6 +38,31 @@ def plot_missing_values_per_year(data,col):
     
     
 def plot_missing_values_per_country(data,col,treshold):
+    """
+    Identifies and visualizes countries with an abnormal number of missing values for a given column.
+
+    This function groups the dataset by country, counts missing values for the specified
+    column, and determines which countries exceed a missing-value threshold expressed as
+    a proportion of the total number of observations per country. It plots these countries
+    on a bar chart with annotated values and returns their names.
+
+    Parameters
+    ----------
+    data : pandas.DataFrame
+        The input DataFrame containing a 'country' column and the column to analyze.
+    col : str
+        The name of the column for which missing values are evaluated.
+    treshold : float
+        A value between 0 and 1 representing the proportion of missing values above which
+        a country is flagged as aberrant (e.g., 0.2 for 20%).
+
+    Returns
+    -------
+    pandas.Index
+        An index containing the names of all countries whose missing-value counts exceed
+        the specified threshold.
+    """
+
 
     subset_data = data.groupby(["country"])[col]
     missing_values = subset_data.apply(lambda x: x.isna().sum())
