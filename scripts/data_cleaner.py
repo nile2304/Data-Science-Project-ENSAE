@@ -1,6 +1,4 @@
 import pandas as pd
-import requests
-import bs4
 
 def clean_landlockedData(rawData):
     """
