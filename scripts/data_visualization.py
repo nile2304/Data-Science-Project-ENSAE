@@ -82,3 +82,31 @@ def plot_missing_values_per_country(data,col,treshold):
     plt.show()
     
     return relevant_missing_values.index
+
+def plot_world_PIB(PIB_data):
+    """
+    Plots the total world GDP over time using the provided GDP data.
+
+    This function aggregates the GDP data by year, sums the GDP values for all countries,
+    and visualizes the total world GDP as a line plot.
+
+    Parameters
+    ----------
+    PIB_data : pandas.DataFrame
+        A DataFrame containing 'date' and 'PIB' columns, where 'date' represents years
+        and 'PIB' represents the GDP values for various countries.
+
+    Returns
+    -------
+    None
+        The function displays a matplotlib line plot but does not return any object.
+    """
+
+    world_PIB = PIB_data.groupby("date")["PIB"].sum()
+
+    plt.figure(figsize=(10,6))
+    plt.plot(world_PIB.index, world_PIB.values)
+    plt.title("Évolution du PIB mondial (1990-2024 USD)")
+    plt.xlabel("Année")
+    plt.ylabel("PIB Mondial")
+    plt.show()
