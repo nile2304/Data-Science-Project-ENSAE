@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import pandas as pd
 
 def plot_missing_values_per_year(data,col):
     """
@@ -110,3 +111,54 @@ def plot_world_PIB(PIB_data):
     plt.xlabel("Année")
     plt.ylabel("PIB Mondial")
     plt.show()
+
+def plot_PIB_quantile(PIB_data):
+
+    quantiles = pd.qcut(PIB_data['PIB'], q=20, labels=False)
+
+    data = pd.DataFrame({
+        'year': PIB_data['date'],
+        'quantiles': quantiles,
+        'PIB': PIB_data['PIB']
+    })
+
+    grouped_data = data.groupby(['year', 'quantiles'])['PIB'].mean().unstack()
+    overall_mean = data.groupby('year')['PIB'].mean()
+
+    plt.figure(figsize=(11, 6))
+    for decile in range(20):
+        plt.plot(grouped_data.index, grouped_data[decile], label=f'Quantiles {decile + 1}')
+        plt.text(grouped_data.index[-1] + 2, grouped_data[decile].iloc[-1],
+                f'Quantiles {decile + 1}',
+                va='center', ha='left', color=plt.gca().get_lines()[-1].get_color())
+    plt.plot(overall_mean.index, overall_mean, label='Overall Mean', linestyle='--', color='black')
+    plt.text(overall_mean.index[-1] + 2, overall_mean.iloc[-1] + 13,
+         'Mean',
+         va='center', ha='left', color='black')
+    plt.xlabel('Year')
+    plt.ylabel('Average GDP')
+    plt.title('Average GDP by Quantiles Over Time')
+    plt.show()
+
+def plot_PIB_top_quantile_countries(PIB_data,chosen_quantile=19):
+
+    quantiles = pd.qcut(PIB_data['PIB'], q=20, labels=False)
+
+    data = pd.DataFrame({
+        'country': PIB_data['country'],
+        'year': PIB_data['date'],
+        'quantiles': quantiles,
+        'CG_debt': PIB_data['PIB']
+    })
+
+    top_decile_data = data[data['quantiles'] == chosen_quantile]
+    plt.figure(figsize=(12, 6))
+    for country in top_decile_data['country'].unique():
+        country_data = top_decile_data[top_decile_data['country'] == country]
+        plt.plot(country_data['year'], country_data['CG_debt'], label=country)
+    plt.xlabel('Year')
+    plt.ylabel('PIB')
+    plt.title(f'Evolution of PIB for Countries in the {chosen_quantile+1}th Decile')
+    plt.show()
+
+    print(f'Countries in the {chosen_quantile+1}th-decile: {data[data['quantiles'] == chosen_quantile]['country'].unique()}')
