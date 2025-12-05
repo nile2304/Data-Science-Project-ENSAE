@@ -6,6 +6,7 @@ import seaborn as sns
 import numpy as np
 
 
+
 url = "https://api.worldbank.org/v2/country?format=json&per_page=500"
 response = requests.get(url)
 data = response.json()[1]  # [1] contient la liste des pays
@@ -17,7 +18,7 @@ countries_df = pd.DataFrame(data)
 iso2_codes = countries_df["iso2Code"].tolist()
 
 # Afficher les 10 premiers codes
-print(iso2_codes[:10])
+#print("the 10 first codes are : ", iso2_codes[:10])
 
 class WorldBankData:
     """
@@ -125,18 +126,6 @@ def get_rawlandlockedCountries(url):
 
 def get_ISOcodes(url):
 
-<<<<<<< HEAD:DATA
-# --- Tracer le PIB réel avec des couleurs personnalisées ---
-wb.plot("PIB_reel", title="Évolution du PIB réel (2015 USD)", colors=["red", "green", "blue"])
-
-
-
-def read_data(file_path):
-    """
-    Lit les données depuis un fichier .
-    """
-    return pd.read_csv(file_path)
-=======
     """
     Scrapes a Wikipedia table containing countries and their ISO codes.
 
@@ -162,4 +151,4 @@ def read_data(file_path):
     rows = table_body.find_all('tr')
     
     return rows
->>>>>>> 4c0dfc3df3016c698937c0f0d2964e0914e5a37d:scripts/data_collector.py
+
