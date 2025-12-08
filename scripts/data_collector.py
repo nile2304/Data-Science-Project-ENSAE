@@ -18,10 +18,10 @@ class WorldBankData:
     }
 
     BACKUP_PATHS = {
-        "PIB": "\data\PIB_data.csv",
-        "Importations": "\data\Importations_data.csv",
-        "Exportations": "\data\Exportations_data.csv",
-        "Chomage": "\data\Chomage_data.csv"
+        "PIB": "data/PIB_data.csv",
+        "Importations": "data/Importations_data.csv",
+        "Exportations": "data/Exportations_data.csv",
+        "Chomage": "data/Chomage_data.csv"
     }
 
     def __init__(self):
@@ -67,9 +67,10 @@ class WorldBankData:
             # Load backup CSV
             df = pd.read_csv(backup_path)
             self.data[indicator_name] = df
+            df.drop(columns=['Unnamed: 0'], inplace=True)
             print(f" Données locales chargées depuis {backup_path}")
 
-            return None
+            return df
 
     sns.set_theme(style="whitegrid")  # style de base pour les graphiques
 
