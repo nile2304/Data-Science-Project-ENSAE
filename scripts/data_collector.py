@@ -11,12 +11,17 @@ class WorldBankData:
     """
 
     INDICATEURS = {
-        "PIB_reel": "NY.GDP.MKTP.KD",
-        "PIB_nominal": "NY.GDP.MKTP.CD",
-        "PIB_par_habitant": "NY.GDP.PCAP.KD",
+        "PIB": "NY.GDP.MKTP.KD",
         "Chomage": "SL.UEM.TOTL.ZS",
         "Exportations": "NE.EXP.GNFS.ZS",
         "Importations": "NE.IMP.GNFS.ZS"
+    }
+
+    BACKUP_PATHS = {
+        "PIB": "data/PIB_data.csv",
+        "Importations": "data/Importations_data.csv",
+        "Exportations": "data/Exportations_data.csv",
+        "Chomage": "data/Chomage_data.csv"
     }
 
     def __init__(self):
@@ -32,22 +37,40 @@ class WorldBankData:
         code = self.INDICATEURS[indicator_name]
         countries_str = ";".join([c.upper() for c in countries])
         url = f"https://api.worldbank.org/v2/country/{countries_str}/indicator/{code}?date={start}:{end}&format=json&per_page=20000"
+        try:
+            response = requests.get(url)
+            if response.status_code != 200:
+                raise ConnectionError(f"Erreur API : {response.status_code}")
 
-        response = requests.get(url)
-        if response.status_code != 200:
-            raise ConnectionError(f"Erreur API : {response.status_code}")
 
-        data_json = response.json()[1]
+            data_json = response.json()[1]
 
-        df = pd.DataFrame(data_json)[["country", "date", "value"]]
-        df["country"] = df["country"].apply(lambda x: x["value"])
-        df["date"] = df["date"].astype(int)
+            df = pd.DataFrame(data_json)[["country", "date", "value"]]
+            df["country"] = df["country"].apply(lambda x: x["value"])
+            df["date"] = df["date"].astype(int)
+            
+            df.rename(columns={"value":indicator_name},inplace=True)
+            
+            self.data[indicator_name] = df
+            
+            return df
         
-        df.rename(columns={"value":"PIB"},inplace=True)
-        
-        self.data[indicator_name] = df
-        
-        return df
+        except Exception as e:
+            print(f"Erreur lors de la récupération des données : {e}")
+
+            # Path to backup
+            backup_path = self.BACKUP_PATHS.get(indicator_name)
+
+            if not backup_path:
+                raise FileNotFoundError(f"Impossible de charger les données locales pour {indicator_name}.")
+
+            # Load backup CSV
+            df = pd.read_csv(backup_path)
+            self.data[indicator_name] = df
+            df.drop(columns=['Unnamed: 0'], inplace=True)
+            print(f" Données locales chargées depuis {backup_path}")
+
+            return df
 
     sns.set_theme(style="whitegrid")  # style de base pour les graphiques
 
