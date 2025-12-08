@@ -1,5 +1,9 @@
 import matplotlib.pyplot as plt
 import pandas as pd
+import numpy as np
+import plotly.express as px
+from sklearn.cluster import KMeans
+
 
 def plot_missing_values_per_year(data,col):
     """
@@ -162,3 +166,24 @@ def plot_PIB_top_quantile_countries(PIB_data,chosen_quantile=19):
     plt.show()
 
     print(f'Countries in the {chosen_quantile+1}th-decile: {data[data['quantiles'] == chosen_quantile]['country'].unique()}')
+    
+def visualize_economicPower_clusters(weightCountry_data):
+
+    # KMeans clustering
+    kmeans = KMeans(n_clusters=4, random_state=42)
+    weightCountry_data["Power"] = kmeans.fit_predict(weightCountry_data[["avgWeightCountry"]])
+
+    # Sort clusters by weight (so 3 = very high, 2 = high, 1= low, 0 = very low)
+    cluster_order = weightCountry_data.groupby("Power")["avgWeightCountry"].mean().sort_values().index
+    mapping = {cluster_order[0]: 0, cluster_order[1]: 1, cluster_order[2]: 2, cluster_order[3]: 3}
+    weightCountry_data["Power"] = weightCountry_data["Power"].map(mapping)
+
+    fig = px.choropleth(
+        weightCountry_data,
+        locations="country",
+        locationmode="ISO-3",
+        color="Power",
+        color_continuous_scale=["red", "orange", "blue", "green"],
+        title="World Classification Map by Economic Power"
+    )
+    fig.show()
