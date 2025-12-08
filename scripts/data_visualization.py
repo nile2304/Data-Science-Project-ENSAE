@@ -5,7 +5,7 @@ import plotly.express as px
 from sklearn.cluster import KMeans
 
 
-def plot_missing_values_per_year(data,col):
+def plot_missing_values_per_year(data,col,text="PIB Reel"):
     """
     Plots the number of missing values per year for a specified column in a dataset.
 
@@ -36,13 +36,13 @@ def plot_missing_values_per_year(data,col):
         ax1.text(bar.get_x() + bar.get_width()/2, yval, int(yval), va='bottom', ha='center')
     ax1.set_xlabel('Year')
     ax1.set_ylabel('Number of Missing Values per Year')
-    ax1.set_title('Missing Values per Year for PIB Reel')
+    ax1.set_title(f'Missing Values per Year for {text}')
     ax1.set_xticks(missing_values.index)
     ax1.set_xticklabels(missing_values.index, rotation=90)
     plt.show()
     
     
-def plot_missing_values_per_country(data,col,treshold):
+def plot_missing_values_per_country(data,col,treshold,text="PIB Reel"):
     """
     Identifies and visualizes countries with an abnormal number of missing values for a given column.
 
@@ -81,7 +81,7 @@ def plot_missing_values_per_country(data,col,treshold):
         ax1.text(bar.get_x() + bar.get_width()/2, yval, int(yval), va='bottom', ha='center')
     ax1.set_xlabel('Year')
     ax1.set_ylabel('Number of Missing Values per Country')
-    ax1.set_title('Missing Values per Country for PIB Reel')
+    ax1.set_title(f'Missing Values per Country for {text}')
     ax1.set_xticks(relevant_missing_values.index)
     ax1.set_xticklabels(relevant_missing_values.index, rotation=90)
     plt.show()
