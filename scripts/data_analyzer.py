@@ -37,7 +37,7 @@ class TradeDataAnalyzer:
 
         # Calcul des indicateurs
         self._compute_trade_indicators()
-
+#Filter on
     def _filter_countries(self, min_years=10):
         """Ne conserve que les pays avec au moins min_years années de données valides"""
         initial_countries = list(self.imports.columns)  # <-- sauvegarder avant filtrage
@@ -71,7 +71,7 @@ class TradeDataAnalyzer:
         self.ratio[self.imports == 0] = np.nan
 
         # Ouverture commerciale = (exports + imports) / PIB
-        self.openness = (self.exports + self.imports).divide(self.PIB)
+        self.openness = (self.exports + self.imports)
         self.openness[self.PIB.isna()] = np.nan
 
     def get_balance(self) -> pd.DataFrame:
