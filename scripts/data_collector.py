@@ -14,15 +14,13 @@ url = "https://api.worldbank.org/v2/country?format=json&per_page=500"
 response = requests.get(url)
 print("Status code:", response.status_code)
 data = response.json()[1]
-
-  # [1] contient la liste des pays
+#[1] contient la liste des pays
 
 # Transformer en DataFrame
 countries_df = pd.DataFrame(data)
 
 # Sélection des codes ISO2
 iso2_codes = countries_df["iso2Code"].tolist()
-
 # Afficher les 10 premiers codes
 #print("the 10 first codes are : ", iso2_codes[:10])
 
@@ -192,7 +190,15 @@ def get_ISOcodes(url):
     
     return rows
 
-#wb = WorldBankData()
+wb = WorldBankData()
+liste_pays = iso2_codes  # Utilisation des codes ISO2 récupérés précédemment
+
+# Récupération des données
+imports_df = wb.get_indicator("Importations", ["FR","DE","US"], start=2000, end=2024)
+exports_df = wb.get_indicator("Exportations", ["FR","DE","US"], start=2000, end=2024)
+PIB_df = wb.get_indicator("PIB_reel", ["FR","DE","US"], start=2000, end=2024)
+
+print("Données récupérées avec succès.")
 
 # Récupération d’un indicateur pour tester
 #wb.get_indicator("PIB_nominal", countries=["FR","DE","US"], start=2000, end=2024)

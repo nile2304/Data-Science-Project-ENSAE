@@ -1,4 +1,7 @@
 import pandas as pd
+import numpy as np 
+from data_collector import WorldBankData
+import matplotlib.pyplot as plt
 
 def clean_landlockedData(rawData):
     """
@@ -85,3 +88,77 @@ def clean_ISOData(rawData):
     data_ISO.drop(columns=[2],axis=1,inplace=True)
     
     return data_ISO.reset_index(drop=True)
+
+
+class TradeDataPreparer:
+    """
+    Prépare et nettoie les données Importations et Exportations pour analyse.
+    """
+
+    def __init__(self, imports_df, exports_df, PIB_df):
+        """
+        imports_df, exports_df, PIB_df : DataFrames pivotés (index = années, colonnes = pays)
+        """
+        self.imports = imports_df.copy()
+        self.exports = exports_df.copy()
+        self.PIB = PIB_df.copy()
+
+        self._align_columns()
+        self._interpolate_missing_values()
+
+    def _align_columns(self):
+        """
+        Assure que tous les DataFrames ont les mêmes colonnes (même pays).
+        """
+        all_countries = set(self.imports.columns).union(set(self.exports.columns)).union(set(self.PIB.columns))
+
+        for country in all_countries:
+            if country not in self.imports.columns:
+                self.imports[country] = np.nan
+            if country not in self.exports.columns:
+                self.exports[country] = np.nan
+            if country not in self.PIB.columns:
+                self.PIB[country] = np.nan
+
+        self.imports = self.imports[sorted(all_countries)]
+        self.exports = self.exports[sorted(all_countries)]
+        self.PIB = self.PIB[sorted(all_countries)]
+
+    def _interpolate_missing_values(self):
+        """
+        Interpole les valeurs manquantes par pays pour éviter les NaN.
+        """
+        self.imports = self.imports.apply(lambda x: x.interpolate(method="linear"), axis=0)
+        self.exports = self.exports.apply(lambda x: x.interpolate(method="linear"), axis=0)
+        self.PIB = self.PIB.apply(lambda x: x.interpolate(method="linear"), axis=0)
+
+    def get_clean_data(self):
+        """
+        Retourne les DataFrames nettoyés prêts pour le calcul d'indicateurs.
+        """
+        return self.imports, self.exports, self.PIB
+
+
+Wb = WorldBankData()
+imports_df = Wb.get_indicator("Importations", countries=["FR","DE","US"], start=2000, end=2024)
+exports_df = Wb.get_indicator("Exportations", countries=["FR","DE","US"], start=2000, end=2024)
+PIB_df = Wb.get_indicator("PIB_reel", countries=["FR","DE","US"], start=2000, end=2024)
+print("Données Import/Export récupérées.")
+# Utilisation :
+trade_cleaner = TradeDataPreparer(imports_df, exports_df, PIB_df)
+imports_clean, exports_clean, PIB_clean = trade_cleaner.get_clean_data()
+
+print("Données Import/Export nettoyées et interpolées.")
+
+print("Colonnes imports :", imports_clean.columns)
+print("Index (années) :", imports_clean.index)
+
+
+print(imports_df.columns.tolist())
+
+country = 'France'  # exemple
+plt.plot(imports_df.index, imports_df[country], marker='o', label='Original')
+plt.plot(imports_clean.index, imports_clean[country], marker='x', label='Interpolé')
+plt.legend()
+plt.show()
+
