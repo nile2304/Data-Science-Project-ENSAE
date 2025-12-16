@@ -1,3 +1,5 @@
+import pandas as pd
+
 def check_missing_values(data,col):
     """
     Checks and prints the number and percentage of missing values in the specified column of the DataFrame,
@@ -55,3 +57,22 @@ def impute_missing_values(data,col,method="mean"):
 
     return data
     
+
+class TradeDataAnalyzer:
+
+    def __init__(self, trade_data):
+        self.trade_data = trade_data
+        
+    def get_balance(self) -> pd.DataFrame:
+        self.commercialBalance = self.trade_data['Exportations'] - self.trade_data['Importations']
+        self.trade_data['commBalance'] = self.commercialBalance
+    
+    def aggregate_commercialBalance(self) -> pd.DataFrame:
+        aggregated_data = self.trade_data.groupby('country')['commBalance'].mean().reset_index()
+        return aggregated_data
+
+    def classify_exporters(self, threshold=0) -> pd.DataFrame:
+
+        aggregated_data = self.aggregate_commercialBalance()
+        aggregated_data['netExportateur'] = (aggregated_data['commBalance'] > threshold).astype(int)
+        return aggregated_data
