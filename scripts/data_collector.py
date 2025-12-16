@@ -11,15 +11,6 @@ url = "https://api.worldbank.org/v2/country?format=json&per_page=500"
 response = requests.get(url)
 data = response.json()[1]  # [1] contient la liste des pays
 
-# Transformer en DataFrame
-countries_df = pd.DataFrame(data)
-
-# Sélection des codes ISO2
-iso2_codes = countries_df["iso2Code"].tolist()
-
-# Afficher les 10 premiers codes
-#print("the 10 first codes are : ", iso2_codes[:10])
-
 class WorldBankData:
     """
     Classe pour récupérer et visualiser des indicateurs World Bank pour un ou plusieurs pays.
