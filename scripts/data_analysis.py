@@ -48,6 +48,10 @@ def impute_missing_values(data,col,method="mean"):
     
     if method == "mean":
         data[col] = data.groupby("country")[col].transform(lambda x: x.fillna(x.mean()))
-    
+    elif method == "backward_fill":
+        data[col] = data.groupby("country")[col].transform(lambda x: x.bfill())
+    elif method == "forward_fill":
+        data[col] = data.groupby("country")[col].transform(lambda x: x.ffill())
+
     return data
     
