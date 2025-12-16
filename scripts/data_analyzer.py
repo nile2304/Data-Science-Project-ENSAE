@@ -37,7 +37,11 @@ class TradeDataAnalyzer:
 
         # Calcul des indicateurs
         self._compute_trade_indicators()
+<<<<<<< HEAD
 
+=======
+#Filter on
+>>>>>>> 8c435ea8fc992d2b676e63264af91f6c1af2cb87
     def _filter_countries(self, min_years=10):
         """Ne conserve que les pays avec au moins min_years années de données valides"""
         initial_countries = list(self.imports.columns)  # <-- sauvegarder avant filtrage

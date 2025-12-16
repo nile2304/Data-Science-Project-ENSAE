@@ -4,81 +4,106 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
-
+import os
+import json
+from datetime import datetime
+import time 
 
 
 url = "https://api.worldbank.org/v2/country?format=json&per_page=500"
 response = requests.get(url)
-data = response.json()[1]  # [1] contient la liste des pays
+print("Status code:", response.status_code)
+data = response.json()[1]
+#[1] contient la liste des pays
 
+<<<<<<< HEAD
+=======
+# Transformer en DataFrame
+countries_df = pd.DataFrame(data)
+
+# Sélection des codes ISO2
+iso2_codes = countries_df["iso2Code"].tolist()
+# Afficher les 10 premiers codes
+#print("the 10 first codes are : ", iso2_codes[:10])
+
+>>>>>>> 8c435ea8fc992d2b676e63264af91f6c1af2cb87
 class WorldBankData:
     """
     Classe pour récupérer et visualiser des indicateurs World Bank pour un ou plusieurs pays.
     """
 
     INDICATEURS = {
-        "PIB": "NY.GDP.MKTP.KD",
+        "PIB_reel": "NY.GDP.MKTP.KD",
+        "PIB_nominal": "NY.GDP.MKTP.CD",
+        "PIB_par_habitant": "NY.GDP.PCAP.KD",
         "Chomage": "SL.UEM.TOTL.ZS",
         "Exportations": "NE.EXP.GNFS.ZS",
         "Importations": "NE.IMP.GNFS.ZS"
     }
 
-    BACKUP_PATHS = {
-        "PIB": "data/PIB_data.csv",
-        "Importations": "data/Importations_data.csv",
-        "Exportations": "data/Exportations_data.csv",
-        "Chomage": "data/Chomage_data.csv"
-    }
-
     def __init__(self):
-        self.data = {}  # stocke les DataFrames par indicateur
-
-    def get_indicator(self, indicator_name, countries, start=2000, end=2024):
-        """
-        Récupère un indicateur pour plusieurs pays.
-        """
+        self.data = {}
+        self.session = requests.Session()
+        self.session.headers.update({
+            "User-Agent": "python-requests/2.31.0",
+            "Accept": "application/json"
+        })
+    
+    def get_indicator(self, indicator_name, countries, start=2000, end=2024, batch_size=10):
         if indicator_name not in self.INDICATEURS:
             raise ValueError(f"Indicateur inconnu. Choisir parmi : {list(self.INDICATEURS.keys())}")
-
+        
         code = self.INDICATEURS[indicator_name]
-        countries_str = ";".join([c.upper() for c in countries])
-        url = f"https://api.worldbank.org/v2/country/{countries_str}/indicator/{code}?date={start}:{end}&format=json&per_page=20000"
-        try:
-            response = requests.get(url)
-            if response.status_code != 200:
-                raise ConnectionError(f"Erreur API : {response.status_code}")
+        all_df = []
 
+        for i in range(0, len(countries), batch_size):
+            batch = countries[i:i+batch_size]
+            countries_str = ";".join([c.upper() for c in batch])
+            url = f"https://api.worldbank.org/v2/country/{countries_str}/indicator/{code}?date={start}:{end}&format=json&per_page=20000"
+            
+            for attempt in range(3):  # retry si erreur 403
+                response = self.session.get(url)
+                if response.status_code == 200:
+                    break
+                else:
+                    print(f"Erreur {response.status_code} pour batch {batch}, retry {attempt+1}/3...")
+                    time.sleep(2)
+            else:
+                print(f"Impossible de récupérer le batch {batch}, saut...")
+                continue
 
             data_json = response.json()[1]
-
             df = pd.DataFrame(data_json)[["country", "date", "value"]]
             df["country"] = df["country"].apply(lambda x: x["value"])
             df["date"] = df["date"].astype(int)
-            
-            df.rename(columns={"value":indicator_name},inplace=True)
-            
-            self.data[indicator_name] = df
-            
-            return df
-        
-        except Exception as e:
-            print(f"Erreur lors de la récupération des données : {e}")
+            df_pivot = df.pivot(index="date", columns="country", values="value").sort_index()
+            all_df.append(df_pivot)
 
-            # Path to backup
-            backup_path = self.BACKUP_PATHS.get(indicator_name)
+        result = pd.concat(all_df, axis=1)
+        self.data[indicator_name] = result
+        return result
+    def backup_data(self, folder="backup"):
+        """
+        Sauvegarde toutes les données récupérées dans des fichiers JSON.
+        Chaque indicateur est sauvegardé dans un fichier séparé avec timestamp.
+        """
+        if not self.data:
+            print("Aucune donnée à sauvegarder.")
+            return
 
-            if not backup_path:
-                raise FileNotFoundError(f"Impossible de charger les données locales pour {indicator_name}.")
+        # Crée le dossier backup s'il n'existe pas
+        os.makedirs(folder, exist_ok=True)
 
-            # Load backup CSV
-            df = pd.read_csv(backup_path)
-            self.data[indicator_name] = df
-            df.drop(columns=['Unnamed: 0'], inplace=True)
-            print(f" Données locales chargées depuis {backup_path}")
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
-            return df
-
-    sns.set_theme(style="whitegrid")  # style de base pour les graphiques
+        for indicator, df in self.data.items():
+            file_path = os.path.join(folder, f"{indicator}_{timestamp}.json")
+            # Conversion du DataFrame en dictionnaire
+            data_dict = df.to_dict(orient="index")
+            # Sauvegarde en JSON
+            with open(file_path, "w", encoding="utf-8") as f:
+                json.dump(data_dict, f, ensure_ascii=False, indent=4)
+            print(f"Backup de '{indicator}' sauvegardé dans : {file_path}")
 
     def plot(self, indicator_name, title=None, figsize=(10,6), colors=None):
         """
@@ -109,85 +134,8 @@ class WorldBankData:
         plt.show()
     
 
-class TradeDataAnalyzer:
-    """
-    Analyse des importations, exportations et balance commerciale.
-    Fournit nettoyage, calcul de la balance, ratio et classification binaire.
-    """
-
-    def __init__(self, imports_df, exports_df):
-        """
-        imports_df, exports_df : DataFrames pivotés (index = années, colonnes = pays)
-        """
-        self.imports = imports_df.copy()
-        self.exports = exports_df.copy()
-        self._clean_data()
-        self._compute_balance_ratio()
-        self._concat_by_country()
-
-    def _clean_data(self):
-        """Remplacer les NaN par 0 et aligner tous les pays dans les deux DataFrames."""
-        self.imports = self.imports.fillna(0)
-        self.exports = self.exports.fillna(0)
-
-        all_countries = set(self.imports.columns).union(set(self.exports.columns))
-        for country in all_countries:
-            if country not in self.imports.columns:
-                self.imports[country] = 0
-            if country not in self.exports.columns:
-                self.exports[country] = 0
-
-        # Réordonner les colonnes
-        self.imports = self.imports[sorted(all_countries)]
-        self.exports = self.exports[sorted(all_countries)]
-        self.all_countries = sorted(all_countries)
-
-    def _compute_balance_ratio(self):
-        """Calculer la balance commerciale et le ratio export/import."""
-        self.balance = self.exports - self.imports
-        # Ratio export/import
-        self.ratio = self.exports / self.imports.replace(0, 1) # empêcher la division par zéro
-
-    def _concat_by_country(self):
-        """Concaténer les colonnes par pays : import, export, balance, ratio."""
-        df_list = []
-        for country in self.all_countries:
-            temp = pd.concat([
-                self.imports[[country]].rename(columns={country: f"{country}_import"}),
-                self.exports[[country]].rename(columns={country: f"{country}_export"}),
-                self.balance[[country]].rename(columns={country: f"{country}_balance"}),
-                self.ratio[[country]].rename(columns={country: f"{country}_ratio"})
-            ], axis=1)
-            df_list.append(temp)
-        self.df_combined = pd.concat(df_list, axis=1)
-        self.df_combined.index.name = "Year"
-
-    def get_combined_df(self):
-        """Retourne le DataFrame complet avec colonnes groupées par pays."""
-        return self.df_combined
-
-    def get_balance(self):
-        """Retourne le DataFrame de la balance commerciale uniquement."""
-        return self.balance
-
-    def get_ratio(self):
-        """Retourne le DataFrame des ratios export/import."""
-        return self.ratio
-
-    def classify_countries(self, threshold=0):
-        """
-        Classifie les pays selon leur balance moyenne.
-        Exportateur net = 1 si balance moyenne > threshold, sinon 0.
-        """
-        balance_mean = self.balance.mean()
-        classification = (balance_mean > threshold).astype(int)
-        classification_df = pd.DataFrame({
-            "Country": balance_mean.index,
-            "Balance_mean": balance_mean.values,
-            "Exportateur_net": classification.values
-        })
-        return classification_df
   
+
 
 def get_rawlandlockedCountries(url):
     """
@@ -245,3 +193,18 @@ def get_ISOcodes(url):
     
     return rows
 
+wb = WorldBankData()
+liste_pays = iso2_codes  # Utilisation des codes ISO2 récupérés précédemment
+
+# Récupération des données
+imports_df = wb.get_indicator("Importations", ["FR","DE","US"], start=2000, end=2024)
+exports_df = wb.get_indicator("Exportations", ["FR","DE","US"], start=2000, end=2024)
+PIB_df = wb.get_indicator("PIB_reel", ["FR","DE","US"], start=2000, end=2024)
+
+print("Données récupérées avec succès.")
+
+# Récupération d’un indicateur pour tester
+#wb.get_indicator("PIB_nominal", countries=["FR","DE","US"], start=2000, end=2024)
+
+# Sauvegarde de toutes les données déjà récupérées
+#wb.backup_data(folder="worldbank_backup")
