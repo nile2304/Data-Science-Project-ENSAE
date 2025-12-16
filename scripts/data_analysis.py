@@ -75,4 +75,4 @@ class TradeDataAnalyzer:
 
         aggregated_data = self.aggregate_commercialBalance()
         aggregated_data['netExportateur'] = (aggregated_data['commBalance'] > threshold).astype(int)
-        return aggregated_data
+        return aggregated_data.drop(columns=['commBalance'])

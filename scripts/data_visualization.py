@@ -187,3 +187,15 @@ def visualize_economicPower_clusters(weightCountry_data):
         title="World Classification Map by Economic Power"
     )
     fig.show()
+
+def visualize_trade_clusters(netExportators_data):
+
+    fig = px.choropleth(
+        netExportators_data,
+        locations=netExportators_data["country"],
+        locationmode="ISO-3",
+        color="netExportateur",
+        color_continuous_scale=["green", "blue"],
+        title="World Classification Map by Exportators Countries"
+    )
+    fig.show()
