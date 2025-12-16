@@ -199,3 +199,15 @@ def visualize_trade_clusters(netExportators_data):
         title="World Classification Map by Exportators Countries"
     )
     fig.show()
+
+def visualize_landlocked_countries(landlocked_data):
+
+    fig = px.choropleth(
+        landlocked_data,
+        locations=landlocked_data["country"],
+        locationmode="ISO-3",
+        color="isLandlocked",
+        color_continuous_scale=["green", "red"],
+        title="World Classification Map by Landlocked Countries"
+    )
+    fig.show()

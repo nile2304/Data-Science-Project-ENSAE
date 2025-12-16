@@ -31,13 +31,13 @@ def clean_landlockedData(rawData):
     data_countries = data_countries.reset_index()
     columns_to_drop = data_countries.columns[[0,2]] # J'enlève les données de la CIA. Pas très pertinentes 
     data_countries = data_countries.drop(columns=columns_to_drop,axis=1)
-    data_countries = data_countries.rename(columns={0: "Pays", 2: "Coastline(km)"})
+    data_countries = data_countries.rename(columns={0: "country", 2: "Coastline"})
     
     data_countries.drop(0,inplace=True) # Enlever la ligne contenant l'information sur tout le MONDE
 
     # Convertir la colonne des frontières en valeurs numériques
-    data_countries["Coastline(km)"] = data_countries["Coastline(km)"].apply(lambda x: x.replace(',',''))
-    data_countries["Coastline(km)"] = pd.to_numeric(data_countries["Coastline(km)"])
+    data_countries["Coastline"] = data_countries["Coastline"].apply(lambda x: x.replace(',',''))
+    data_countries["Coastline"] = pd.to_numeric(data_countries["Coastline"])
     
     return data_countries
 

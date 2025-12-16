@@ -1,0 +1,259 @@
+,Pays,Coastline(km)
+1,Canada,265523.0
+2,Norway,53199.0
+3,Indonesia,95181.0
+4,European Union,
+5,Greenland,
+6,Russia,110310.0
+7,Philippines,33900.0
+8,Japan,29020.0
+9,Australia,66530.0
+10,United States,133312.0
+11,Antarctica,
+12,New Zealand,17209.0
+13,China,30017.0
+14,Greece,15147.0
+15,United Kingdom,19717.0
+16,Mexico,23761.0
+17,Italy,9226.0
+18,Denmark,5316.0
+19,Brazil,33379.0
+20,Turkey,8140.0
+21,India,17181.0
+22,Chile,78563.0
+23,Micronesia,1295.0
+24,Croatia,5664.0
+25,Solomon Islands,9880.0
+26,Papua New Guinea,20197.0
+27,Argentina,8397.0
+28,Iceland,8506.0
+29,Spain,7268.0
+30,France,7330.0
+31,Madagascar,9935.0
+32,Malaysia,9323.0
+33,Estonia,2956.0
+34,Cuba,14519.0
+35,Svalbard,
+36,Bahamas,11238.0
+37,Vietnam,11409.0
+38,Somalia,3898.0
+39,Thailand,7066.0
+40,Sweden,26384.0
+41,Colombia,5875.0
+42,Coral Sea Islands,
+43,French Southern and Antarctic Lands,
+44,Morocco,2009.0
+45,Venezuela,6762.0
+46,South Africa,3751.0
+47,Ukraine,4953.0
+48,Saudi Arabia,7572.0
+49,Vanuatu,3132.0
+50,French Polynesia,5830.0
+51,North Korea,4009.0
+52,Panama,5637.0
+53,Mozambique,6942.0
+54,Egypt,5898.0
+55,Iran,5891.0
+56,Peru,3362.0
+57,South Korea,12478.0
+58,Germany,3624.0
+59,New Caledonia,3624.0
+60,Ecuador,4597.0
+61,Eritrea,3446.0
+62,Oman,2810.0
+63,Myanmar,14708.0
+64,Yemen,3149.0
+65,Portugal,2830.0
+66,Haiti,1977.0
+67,Libya,2025.0
+68,Angola,2252.0
+69,Namibia,1754.0
+70,Taiwan,2007.0
+71,Palau,
+72,Northern Mariana Islands,
+73,Ireland,6437.0
+74,Tanzania,3461.0
+75,Sri Lanka,2825.0
+76,United Arab Emirates,2871.0
+77,Costa Rica,2069.0
+78,Dominican Republic,1612.0
+79,Falkland Islands,
+80,Finland,31119.0
+81,Tunisia,1927.0
+82,Kiribati,1961.0
+83,Fiji,4638.0
+84,Faroe Islands,
+85,Pakistan,2599.0
+86,Jamaica,895.0
+87,Algeria,1557.0
+88,Cape Verde,1121.0
+89,Spratly Islands,
+90,Nicaragua,1915.0
+91,Gabon,2019.0
+92,Nigeria,3122.0
+93,Sudan,2245.0
+94,Honduras,1878.0
+95,Mauritania,1268.0
+96,Hong Kong,955.0
+97,Timor-Leste,
+98,British Indian Ocean Territory,
+99,Uruguay,1096.0
+100,Cyprus,671.0
+101,Maldives,2002.0
+102,Bangladesh,3306.0
+103,Liberia,842.0
+104,Qatar,909.0
+105,Ghana,758.0
+106,Kenya,1586.0
+107,Senegal,1327.0
+108,Paracel Islands,
+109,Ivory Coast,797.0
+110,Puerto Rico,1094.0
+111,Kuwait,756.0
+112,Latvia,566.0
+113,Seychelles,747.0
+114,Guyana,1154.0
+115,Netherlands,1914.0
+116,Cambodia,1127.0
+117,Poland,1032.0
+118,Tonga,909.0
+119,Samoa,463.0
+120,Cameroon,1799.0
+121,Sierra Leone,1677.0
+122,Guatemala,445.0
+123,Turks and Caicos Islands,
+124,Belize,1996.0
+125,Suriname,620.0
+126,Marshall Islands,2106.0
+127,Curaçao,
+128,Albania,649.0
+129,Trinidad and Tobago,704.0
+130,Bulgaria,457.0
+131,Guinea-Bissau,3176.0
+132,Comoros,469.0
+133,Guinea,1615.0
+134,Djibouti,443.0
+135,Georgia,376.0
+136,El Salvador,756.0
+137,Equatorial Guinea,603.0
+138,Montenegro,
+139,Israel,205.0
+140,Malta,198.0
+141,Lebanon,294.0
+142,Romania,696.0
+143,São Tomé and Príncipe,269.0
+144,Singapore,268.0
+145,Syria,212.0
+146,U.S. Virgin Islands,390.0
+147,Mauritius,496.0
+148,"Congo, Republic of the",205.0
+149,Bahrain,255.0
+150,Brunei,269.0
+151,Cayman Islands,
+152,Isle of Man,
+153,Saint Lucia,166.0
+154,Antigua and Barbuda,289.0
+155,Dominica,152.0
+156,Christmas Island,
+157,Saint Kitts and Nevis,
+158,Wallis and Futuna,
+159,Guam,
+160,Jan Mayen,
+161,Benin,153.0
+162,Grenada,252.0
+163,Cook Islands,
+164,Saint Pierre and Miquelon,
+165,American Samoa,
+166,Bermuda,180.0
+167,Heard Island and McDonald Islands,
+168,Tokelau,
+169,Barbados,97.0
+170,"Saint Helena, Ascension and Tristan da Cunha",
+171,Lithuania,258.0
+172,United States Pacific Island Wildlife Refuges,
+173,Saint Vincent and the Grenadines,264.0
+174,Akrotiri and Dhekelia,
+175,British Virgin Islands,
+176,Gambia,503.0
+177,Ashmore and Cartier Islands,
+178,Jersey,
+179,Aruba,107.0
+180,Belgium,76.0
+181,Niue,
+182,Anguilla,
+183,Saint Martin,
+184,Iraq,105.0
+185,Togo,53.0
+186,Pitcairn Islands,
+187,Guernsey,
+188,Slovenia,41.0
+189,Macau,36.0
+190,Gaza Strip (Palestine),
+191,Montserrat,
+192,"Congo, Democratic Republic of the",177.0
+193,Norfolk Island,
+194,Nauru,
+195,Bouvet Island,
+196,Cocos (Keeling) Islands,
+197,Jordan,27.0
+198,Tuvalu,
+199,Bosnia and Herzegovina,23.0
+200,Wake Island,
+201,Gibraltar,
+202,Clipperton Island,
+203,Navassa Island,
+204,Monaco,
+205,Saint Barthélemy,
+206,Sint Maarten,
+207,South Georgia and the South Sandwich Islands,
+208,Kazakhstan,4528.0
+209,Turkmenistan,1289.0
+210,Azerbaijan,871.0
+211,West Bank (Palestine),
+212,Afghanistan,0.0
+213,Andorra,
+214,Armenia,0.0
+215,Austria,0.0
+216,Belarus,0.0
+217,Bhutan,0.0
+218,Bolivia,0.0
+219,Botswana,0.0
+220,Burkina Faso,0.0
+221,Burundi,0.0
+222,Central African Republic,0.0
+223,Chad,0.0
+224,Czech Republic,0.0
+225,Ethiopia,0.0
+226,Hungary,0.0
+227,Kosovo,
+228,Kyrgyzstan,0.0
+229,Laos,0.0
+230,Lesotho,0.0
+231,Liechtenstein,
+232,Luxembourg,0.0
+233,Malawi,0.0
+234,Mali,0.0
+235,Moldova,0.0
+236,Mongolia,0.0
+237,Nepal,0.0
+238,Niger,0.0
+239,North Macedonia,0.0
+240,Paraguay,0.0
+241,Rwanda,0.0
+242,San Marino,
+243,Serbia,
+244,Slovakia,0.0
+245,South Sudan,
+246,Swaziland,0.0
+247,Switzerland,0.0
+248,Tajikistan,0.0
+249,Uganda,0.0
+250,Uzbekistan,1707.0
+251,Vatican City,
+252,Zambia,0.0
+253,Zimbabwe,0.0
+254,French Guiana,763.0
+255,Guadeloupe,581.0
+256,Martinique,369.0
+257,Caribbean Netherlands,361.0
+258,Réunion,219.0
