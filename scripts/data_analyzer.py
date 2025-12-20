@@ -6,6 +6,9 @@ import data_collector as dc
 import data_cleaner as dcl
 from data_collector import WorldBankData
 from data_cleaner import TradeDataPreparer
+from .data_analysis import check_missing_values, impute_missing_values
+from .data_visualization import plot_missing_values_per_country
+
 
 # --- Préparer la liste des pays ---
 codesISO_url = "https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes"
@@ -148,3 +151,71 @@ print("Albania - PIB:", albania_PIB)
 openness_albania = (albania_imports + albania_exports)
 print("Albania - Ouverture commerciale :")
 print(openness_albania)
+
+class HDIDataAnalyzer:
+    """
+    Classe pour collecter, nettoyer et analyser les données HDI.
+    On conserve les colonnes : countryIsoCode (ISO-3), country, indexCode, year, value.
+    Analyse des valeurs manquantes, suppression des pays incomplets et imputation.
+    """
+
+    def __init__(self, file_path, missing_threshold=0.3):
+        """
+        Parameters
+        ----------
+        file_path : str
+            Chemin vers le fichier hdi-data.xlsx
+        missing_threshold : float
+            Seuil de proportion de valeurs manquantes par pays pour exclusion (0-1)
+        """
+        self.file_path = file_path
+        self.missing_threshold = missing_threshold
+        self.raw_data = None
+        self.df_clean = None
+        self.df_aggregated = None
+        self.excluded_countries = []
+
+        self.read_data()
+
+
+    def read_data(self):
+        """Lecture et filtrage des données HDI depuis le fichier Excel."""
+        df = pd.read_excel(self.file_path)
+        if 'indexCode' in df.columns:
+            df = df[df['indexCode'] == 'HDI']
+        self.raw_data = df[['countryIsoCode', 'country', 'indexCode', 'year', 'value']].copy()
+        print(f"Données lues : {self.raw_data.shape[0]} lignes.")
+
+    def descriptive_stats(self):
+        """Statistiques descriptives globales et par pays."""
+        df = self.raw_data.copy()
+        print("Statistiques globales HDI :")
+        print(df['value'].describe())
+        print("\nNombre de pays :", df['countryIsoCode'].nunique())
+        print("Années couvertes : de", df['year'].min(), "à", df['year'].max())
+
+    def analyze_missing(self):
+        """
+        Analyse des valeurs manquantes :
+        - Par pays : compte et ratio
+        - Visualisation des pays au-dessus du seuil
+        - Exclusion des pays incomplets
+        """
+        df = self.raw_data.copy()
+        missing_counts = df.groupby('countryIsoCode')['value'].apply(lambda x: x.isna().sum())
+        total_years = df['year'].nunique()
+        missing_ratio = missing_counts / total_years
+
+        self.excluded_countries = missing_ratio[missing_ratio > self.missing_threshold].index.tolist()
+        print(f"Pays exclus (>{self.missing_threshold*100:.0f}% valeurs manquantes) : {self.excluded_countries}")
+
+        # Visualisation des pays avec trop de valeurs manquantes
+        if len(self.excluded_countries) > 0:
+            plot_missing_values_per_country(df.rename(columns={'year':'date','value':'HDI'}),
+                                            'HDI',
+                                            treshold=self.missing_threshold)
+
+
+
+
+
