@@ -254,3 +254,12 @@ def get_ISOcodes(url):
     
     return rows
 
+wb = WorldBankData()
+liste_pays = iso2_codes  # Utilisation des codes ISO2 récupérés précédemment
+
+# Récupération des données
+imports_df = wb.get_indicator("Importations", ["FR","DE","US"], start=2000, end=2024)
+exports_df = wb.get_indicator("Exportations", ["FR","DE","US"], start=2000, end=2024)
+PIB_df = wb.get_indicator("PIB", ["FR","DE","US"], start=2000, end=2024)
+
+print("Données récupérées avec succès.")
