@@ -8,6 +8,8 @@ from data_collector import WorldBankData
 from data_cleaner import TradeDataPreparer
 from data_analysis import check_missing_values, impute_missing_values
 from data_visualization import plot_missing_values_per_country
+import plotly.express as px
+
 
 
 # --- Préparer la liste des pays ---
@@ -86,7 +88,7 @@ class TradeDataAnalyzer:
         self.balance = self.exports - self.imports
         self.ratio = self.exports.divide(self.imports)
         self.ratio[self.imports == 0] = np.nan
-        self.openness = (self.exports + self.imports).divide(self.PIB)
+        self.openness = (self.exports + self.imports)
         self.openness[self.PIB.isna()] = np.nan
 
     def get_balance(self) -> pd.DataFrame:
@@ -126,7 +128,7 @@ print(df_summary)
 albania_imports = imports_df['Albania'].head(10)
 albania_exports = exports_df['Albania'].head(10)
 albania_PIB = PIB_df['Albania'].head(10)
-openness_albania = (albania_imports + albania_exports).divide(albania_PIB)
+openness_albania = (albania_imports + albania_exports)
 
 print("Albania - Ouverture commerciale :")
 print(openness_albania)
@@ -232,10 +234,46 @@ class HDIDataAnalyzer:
         return self.df_aggregated.copy()
 
 
+hdi_file_path = "data\\hdi-data.xlsx"
+hdi_analyzer = HDIDataAnalyzer(hdi_file_path, missing_threshold=0.3)
+hdi_analyzer.descriptive_stats()
+hdi_analyzer.analyze_missing()
+hdi_analyzer.clean_data()
+hdi_analyzer.aggregate_by_country()
+df_clean = hdi_analyzer.get_clean_df()
+df_agg = hdi_analyzer.get_aggregated_df()
+print("Données HDI nettoyées :")
+print(df_clean.head())
+print("\nDonnées HDI agrégées :")
+print(df_agg.head())
+
+
+plt.hist(df_agg['HDI_mean'], bins=20, color='skyblue', edgecolor='black')
+plt.title("Distribution de l'IDH moyen par pays")
+plt.xlabel("HDI moyen")
+plt.ylabel("Nombre de pays")
+plt.show()
 
 
 
+#Heatmap mondiale de l'IDH moyen par pays
+fig = px.choropleth(
+    df_agg,
+    locations="countryIsoCode",  # colonnes ISO-3
+    color="HDI_mean",            # valeur à afficher
+    hover_name="countryIsoCode", # nom affiché au survol
+    color_continuous_scale=px.colors.sequential.YlGnBu,
+    title="Heatmap mondiale de l'IDH moyen par pays"
+)
 
+fig.show()
 
-
+df_hdi_time = hdi_analyzer.get_clean_df().groupby('date')['HDI'].mean().reset_index()
+plt.figure(figsize=(10,6))
+sns.lineplot(data=df_hdi_time, x='date', y='HDI')
+plt.title("Évolution de l'IDH moyen mondial")
+plt.xlabel("Année")
+plt.ylabel("HDI")
+plt.tight_layout()  # pour que tout rentre bien
+plt.show() 
 
