@@ -2,8 +2,11 @@ import statsmodels.api as sm
 import seaborn as sns
 import matplotlib.pyplot as plt
 import pandas as pd
+from sklearn.preprocessing import StandardScaler
 
-def reg_maison(data, x_cols, y_col, method='HC3'):
+
+
+def perform_regression(data, x_cols, y_col, method='HC3',plotnum=3):
     """
     Performs a multiple linear regression of y_col on x_cols.
 
@@ -27,9 +30,8 @@ def reg_maison(data, x_cols, y_col, method='HC3'):
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 5), gridspec_kw={'width_ratios': [6, 5]})
     ax1.text(0, 0.5, model.summary().as_text(),va='center', ha='left', fontsize=9, family='monospace')
     ax1.axis('off')
-    sns.scatterplot(x=data[x_cols[0]],y=y,ax=ax2,color='skyblue')
-    sns.regplot(x=data[x_cols[0]],y=y,scatter=False,ax=ax2,color='sandybrown')
-    ax2.set_title(f'{y_col} vs {x_cols[0]} (others controlled)')
+    sns.scatterplot(x=data[x_cols[plotnum]],y=y,ax=ax2,color='skyblue')
+    sns.regplot(x=data[x_cols[plotnum]],y=y,scatter=False,ax=ax2,color='sandybrown')
+    ax2.set_title(f'{y_col} vs {x_cols[plotnum]}')
     plt.tight_layout()
     plt.show()
-

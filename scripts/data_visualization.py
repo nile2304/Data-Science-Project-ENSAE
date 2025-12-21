@@ -168,12 +168,12 @@ def plot_PIB_top_quantile_countries(PIB_data,chosen_quantile=19):
     print(f'Countries in the {chosen_quantile+1}th-decile: {data[data['quantiles'] == chosen_quantile]['country'].unique()}')
     
 def visualize_economicPower_clusters(weightCountry_data):
+
     data = weightCountry_data.copy()
-    # KMeans clustering
+
     kmeans = KMeans(n_clusters=4, random_state=42)
     data["Power"] = kmeans.fit_predict(data[["avgWeightCountry"]])
 
-    # Sort clusters by weight (so 3 = very high, 2 = high, 1= low, 0 = very low)
     cluster_order = data.groupby("Power")["avgWeightCountry"].mean().sort_values().index
     mapping = {cluster_order[0]: 0, cluster_order[1]: 1, cluster_order[2]: 2, cluster_order[3]: 3}
     data["Power"] = data["Power"].map(mapping)
@@ -187,6 +187,8 @@ def visualize_economicPower_clusters(weightCountry_data):
         title="World Classification Map by Economic Power"
     )
     fig.show()
+
+    return data
 
 def visualize_trade_clusters(netExportators_data):
 
@@ -213,8 +215,9 @@ def visualize_landlocked_countries(landlocked_data):
     fig.show()
 
 def visualize_HDI_clusters(HDI_data):
+
     data = HDI_data.copy()
-    # KMeans clustering
+
     kmeans = KMeans(n_clusters=3, random_state=42)
     data["HDI_mean"] = kmeans.fit_predict(data[["HDI_mean"]])
 
