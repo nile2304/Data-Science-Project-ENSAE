@@ -168,18 +168,18 @@ def plot_PIB_top_quantile_countries(PIB_data,chosen_quantile=19):
     print(f'Countries in the {chosen_quantile+1}th-decile: {data[data['quantiles'] == chosen_quantile]['country'].unique()}')
     
 def visualize_economicPower_clusters(weightCountry_data):
-
+    data = weightCountry_data.copy()
     # KMeans clustering
     kmeans = KMeans(n_clusters=4, random_state=42)
-    weightCountry_data["Power"] = kmeans.fit_predict(weightCountry_data[["avgWeightCountry"]])
+    data["Power"] = kmeans.fit_predict(data[["avgWeightCountry"]])
 
     # Sort clusters by weight (so 3 = very high, 2 = high, 1= low, 0 = very low)
-    cluster_order = weightCountry_data.groupby("Power")["avgWeightCountry"].mean().sort_values().index
+    cluster_order = data.groupby("Power")["avgWeightCountry"].mean().sort_values().index
     mapping = {cluster_order[0]: 0, cluster_order[1]: 1, cluster_order[2]: 2, cluster_order[3]: 3}
-    weightCountry_data["Power"] = weightCountry_data["Power"].map(mapping)
+    data["Power"] = data["Power"].map(mapping)
 
     fig = px.choropleth(
-        weightCountry_data,
+        data,
         locations="country",
         locationmode="ISO-3",
         color="Power",
@@ -213,20 +213,20 @@ def visualize_landlocked_countries(landlocked_data):
     fig.show()
 
 def visualize_HDI_clusters(HDI_data):
-
+    data = HDI_data.copy()
     # KMeans clustering
     kmeans = KMeans(n_clusters=3, random_state=42)
-    HDI_data["HDI_mean"] = kmeans.fit_predict(HDI_data[["HDI_mean"]])
+    data["HDI_mean"] = kmeans.fit_predict(data[["HDI_mean"]])
 
-    cluster_order = HDI_data.groupby("HDI_mean")["HDI_mean"].mean().sort_values(ascending=False).index
+    cluster_order = data.groupby("HDI_mean")["HDI_mean"].mean().sort_values(ascending=False).index
     mapping = {cluster_order[0]: 0, cluster_order[1]: 1, cluster_order[2]: 2}
-    HDI_data["HDI_mean"] = HDI_data["HDI_mean"].map(mapping)
+    data["HDI_cluster"] = data["HDI_mean"].map(mapping)
 
     fig = px.choropleth(
-        HDI_data,
+        data,
         locations="country",
         locationmode="ISO-3",
-        color="HDI_mean",
+        color="HDI_cluster",
         color_continuous_scale=["red", "orange", "green"],
         title="World Classification Map by Human Development Index (HDI)"
     )
