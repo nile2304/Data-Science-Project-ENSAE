@@ -76,3 +76,36 @@ class TradeDataAnalyzer:
         aggregated_data = self.aggregate_commercialBalance()
         aggregated_data['netExportateur'] = (aggregated_data['commBalance'] > threshold).astype(int)
         return aggregated_data.drop(columns=['commBalance'])
+
+
+class HDIDataAnalyzer:
+    """
+    Classe pour collecter, nettoyer et analyser les données HDI.
+    On conserve les colonnes : countryIsoCode (ISO-3), country, indexCode, year, value.
+    Analyse des valeurs manquantes, suppression des pays incomplets et imputation.
+    """
+
+    def __init__(self, HDI_data):
+        self.rawData = HDI_data
+
+    def clean_data(self):
+        """
+        Nettoyage des données :
+        - Suppression des données inutiles
+        """
+
+        self.cleaned_data = self.rawData.dropna(subset=['countryIsoCode','year', 'value'])
+        self.cleaned_data = self.cleaned_data.rename(columns={'year':'date','value':'HDI','countryIsoCode':'country'})
+        return self.cleaned_data
+
+    def aggregate_by_country(self):
+        """
+        Agrégation par pays ISO-3 :
+        - HDI moyen
+        - HDI minimum
+        """
+        
+        agg_df = self.cleaned_data.groupby('country')['HDI'].agg(['mean']).reset_index()
+        agg_df.rename(columns={'mean':'HDI_mean','min':'HDI_min'}, inplace=True)
+        self.df_aggregated = agg_df
+        print("Agrégation par pays terminée.")
