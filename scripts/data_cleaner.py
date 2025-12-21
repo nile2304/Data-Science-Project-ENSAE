@@ -1,6 +1,5 @@
 import pandas as pd
 import numpy as np 
-from data_collector import WorldBankData
 import matplotlib.pyplot as plt
 
 def clean_landlockedData(rawData):
@@ -89,6 +88,3 @@ def clean_ISOData(rawData):
     data_ISO.drop(columns=[2],axis=1,inplace=True)
     
     return data_ISO.reset_index(drop=True)
-
-
-

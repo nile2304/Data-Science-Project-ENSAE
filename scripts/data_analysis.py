@@ -94,18 +94,20 @@ class HDIDataAnalyzer:
         - Suppression des données inutiles
         """
 
-        self.cleaned_data = self.rawData.dropna(subset=['countryIsoCode','year', 'value'])
-        self.cleaned_data = self.cleaned_data.rename(columns={'year':'date','value':'HDI','countryIsoCode':'country'})
+        self.cleaned_data = self.rawData.rename(columns={'year':'date','value':'HDI','countryIsoCode':'country',"country":"pays"})
+        self.cleaned_data = self.cleaned_data[['country','date', 'HDI']]
+        
+        # Enlever les lignes ne contenant pas des informations relatives au pays
+        indexes = self.cleaned_data[self.cleaned_data["country"].str.startswith("ZZ")].index
+        self.cleaned_data.drop(indexes,inplace=True)
         return self.cleaned_data
 
-    def aggregate_by_country(self):
+    def aggregated_HDI(self):
         """
         Agrégation par pays ISO-3 :
         - HDI moyen
-        - HDI minimum
         """
-        
         agg_df = self.cleaned_data.groupby('country')['HDI'].agg(['mean']).reset_index()
-        agg_df.rename(columns={'mean':'HDI_mean','min':'HDI_min'}, inplace=True)
-        self.df_aggregated = agg_df
-        print("Agrégation par pays terminée.")
+        agg_df.rename(columns={'mean':'HDI_mean'}, inplace=True)
+
+        return agg_df

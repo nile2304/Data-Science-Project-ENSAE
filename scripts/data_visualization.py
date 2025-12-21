@@ -195,7 +195,7 @@ def visualize_trade_clusters(netExportators_data):
         locations=netExportators_data["country"],
         locationmode="ISO-3",
         color="netExportateur",
-        color_continuous_scale=["green", "blue"],
+        color_continuous_scale=["red", "green"],
         title="World Classification Map by Exportators Countries"
     )
     fig.show()
@@ -209,5 +209,25 @@ def visualize_landlocked_countries(landlocked_data):
         color="isLandlocked",
         color_continuous_scale=["green", "red"],
         title="World Classification Map by Landlocked Countries"
+    )
+    fig.show()
+
+def visualize_HDI_clusters(HDI_data):
+
+    # KMeans clustering
+    kmeans = KMeans(n_clusters=3, random_state=42)
+    HDI_data["HDI_mean"] = kmeans.fit_predict(HDI_data[["HDI_mean"]])
+
+    cluster_order = HDI_data.groupby("HDI_mean")["HDI_mean"].mean().sort_values(ascending=False).index
+    mapping = {cluster_order[0]: 0, cluster_order[1]: 1, cluster_order[2]: 2}
+    HDI_data["HDI_mean"] = HDI_data["HDI_mean"].map(mapping)
+
+    fig = px.choropleth(
+        HDI_data,
+        locations="country",
+        locationmode="ISO-3",
+        color="HDI_mean",
+        color_continuous_scale=["red", "orange", "green"],
+        title="World Classification Map by Human Development Index (HDI)"
     )
     fig.show()
