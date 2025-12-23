@@ -167,7 +167,7 @@ def plot_PIB_top_quantile_countries(PIB_data,chosen_quantile=19):
 
     print(f'Countries in the {chosen_quantile+1}th-decile: {data[data['quantiles'] == chosen_quantile]['country'].unique()}')
     
-def visualize_economicPower_clusters(weightCountry_data):
+def visualize_economicPower_clusters(weightCountry_data, width=900, height=500):
 
     data = weightCountry_data.copy()
 
@@ -186,11 +186,23 @@ def visualize_economicPower_clusters(weightCountry_data):
         color_continuous_scale=["red", "orange", "blue", "green"],
         title="World Classification Map by Economic Power"
     )
+
+    fig.update_layout(
+        geo=dict(
+            showcoastlines=True,
+            coastlinecolor="Black",
+            showland=True,
+            landcolor="white",
+        ),
+        width=width,
+        height=height
+    )
+
     fig.show()
 
     return data
 
-def visualize_trade_clusters(netExportators_data):
+def visualize_trade_clusters(netExportators_data, width=900, height=500):
 
     fig = px.choropleth(
         netExportators_data,
@@ -200,9 +212,20 @@ def visualize_trade_clusters(netExportators_data):
         color_continuous_scale=["red", "green"],
         title="World Classification Map by Exportators Countries"
     )
+    fig.update_layout(
+        geo=dict(
+            showcoastlines=True,
+            coastlinecolor="Black",
+            showland=True,
+            landcolor="white",
+        ),
+        width=width,
+        height=height
+    )
+
     fig.show()
 
-def visualize_landlocked_countries(landlocked_data):
+def visualize_landlocked_countries(landlocked_data, width=900, height=500):
 
     fig = px.choropleth(
         landlocked_data,
@@ -212,9 +235,20 @@ def visualize_landlocked_countries(landlocked_data):
         color_continuous_scale=["green", "red"],
         title="World Classification Map by Landlocked Countries"
     )
+
+    fig.update_layout(
+        geo=dict(
+            showcoastlines=True,
+            coastlinecolor="Black",
+            showland=True,
+            landcolor="white",
+        ),
+        width=width,
+        height=height
+    )
     fig.show()
 
-def visualize_HDI_clusters(HDI_data):
+def visualize_HDI_clusters(HDI_data, width=900, height=500):
 
     data = HDI_data.copy()
 
@@ -233,4 +267,74 @@ def visualize_HDI_clusters(HDI_data):
         color_continuous_scale=["red", "orange", "green"],
         title="World Classification Map by Human Development Index (HDI)"
     )
+
+    fig.update_layout(
+        geo=dict(
+            showcoastlines=True,
+            coastlinecolor="Black",
+            showland=True,
+            landcolor="white",
+        ),
+        width=width,
+        height=height
+    )
+
     fig.show()
+
+
+def animated_economicPower_map(weightCountry_data, width=900, height=500):
+    """
+    Creates an animated world map showing clusters of countries based on economic power over time.
+
+    Parameters:
+    - weightCountry_data (DataFrame): The input dataframe containing 'country', 'year' and 'avgWeightCountry'.
+    - width (int): Width of the map figure.
+    - height (int): Height of the map figure.
+
+    Notes:
+    - Uses KMeans clustering to classify countries into 4 economic power clusters per year.
+    - Displays an animated choropleth map using Plotly.
+    """
+    data = weightCountry_data.copy()
+    
+    # Calculer les clusters par année
+    clustered_data = []
+    for date, group in data.groupby("date"):
+        kmeans = KMeans(n_clusters=4, random_state=42)
+        group = group.copy()
+        group["Power"] = kmeans.fit_predict(group[["weightCountry"]])
+        
+        # Réordonner les clusters de manière croissante
+        cluster_order = group.groupby("Power")["weightCountry"].mean().sort_values().index
+        mapping = {cluster_order[i]: i for i in range(4)}
+        group["Power"] = group["Power"].map(mapping)
+        
+        clustered_data.append(group)
+    
+    data_clustered = pd.concat(clustered_data)
+    
+    # Carte animée
+    fig = px.choropleth(
+        data_clustered,
+        locations="country",
+        locationmode="ISO-3",
+        color="Power",
+        animation_frame="date",
+        color_continuous_scale=["red", "orange", "blue", "green"],
+        title="World Classification Map by Economic Power over Time",
+        range_color=(0, 3)
+    )
+    
+    fig.update_layout(
+        geo=dict(
+            showcoastlines=True,
+            coastlinecolor="Black",
+            showland=True,
+            landcolor="white",
+        ),
+        width=width,
+        height=height
+    )
+    
+    fig.show()
+    
