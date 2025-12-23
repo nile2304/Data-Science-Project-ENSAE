@@ -70,7 +70,7 @@ class WorldBankData:
             print(f" Données locales chargées depuis {backup_path}")
 
             return df
-
+    sns.set_style("whitegrid")
     def plot(self, indicator_name, title=None, figsize=(10,6), colors=None):
         """
         Trace un indicateur pour tous les pays chargés.
