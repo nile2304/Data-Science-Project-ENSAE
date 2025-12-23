@@ -1,9 +1,6 @@
 import statsmodels.api as sm
 import seaborn as sns
 import matplotlib.pyplot as plt
-import pandas as pd
-from sklearn.preprocessing import StandardScaler
-
 
 
 def perform_regression(data, x_cols, y_col, method='HC3',plotnum=3):
