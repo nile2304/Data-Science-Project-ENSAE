@@ -283,18 +283,7 @@ def visualize_HDI_clusters(HDI_data, width=900, height=500):
 
 
 def animated_economicPower_map(weightCountry_data, width=900, height=500):
-    """
-    Creates an animated world map showing clusters of countries based on economic power over time.
 
-    Parameters:
-    - weightCountry_data (DataFrame): The input dataframe containing 'country', 'year' and 'avgWeightCountry'.
-    - width (int): Width of the map figure.
-    - height (int): Height of the map figure.
-
-    Notes:
-    - Uses KMeans clustering to classify countries into 4 economic power clusters per year.
-    - Displays an animated choropleth map using Plotly.
-    """
     data = weightCountry_data.copy()
     
     # Calculer les clusters par année
@@ -323,6 +312,52 @@ def animated_economicPower_map(weightCountry_data, width=900, height=500):
         color_continuous_scale=["red", "orange", "blue", "green"],
         title="World Classification Map by Economic Power over Time",
         range_color=(0, 3)
+    )
+    
+    fig.update_layout(
+        geo=dict(
+            showcoastlines=True,
+            coastlinecolor="Black",
+            showland=True,
+            landcolor="white",
+        ),
+        width=width,
+        height=height
+    )
+    
+    fig.show()
+
+
+def animated_HDI_map(HDI_data, width=900, height=500):
+
+    data = HDI_data.copy()
+    
+    # Calculer les clusters par année
+    clustered_data = []
+    for date, group in data.groupby("date"):
+        kmeans = KMeans(n_clusters=3, random_state=42)
+        group = group.copy()
+        group["Scale"] = kmeans.fit_predict(group[["HDI"]])
+        
+        # Réordonner les clusters de manière croissante
+        cluster_order = group.groupby("Scale")["HDI"].mean().sort_values().index
+        mapping = {cluster_order[i]: i for i in range(3)}
+        group["Scale"] = group["Scale"].map(mapping)
+        
+        clustered_data.append(group)
+    
+    data_clustered = pd.concat(clustered_data)
+    
+    # Carte animée
+    fig = px.choropleth(
+        data_clustered,
+        locations="country",
+        locationmode="ISO-3",
+        color="Scale",
+        animation_frame="date",
+        color_continuous_scale=["red", "orange", "green"],
+        title="World Classification Map by HDI over Time",
+        range_color=(0, 2)
     )
     
     fig.update_layout(
