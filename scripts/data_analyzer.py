@@ -9,6 +9,9 @@ from data_cleaner import TradeDataPreparer
 from data_analysis import check_missing_values, impute_missing_values
 from data_visualization import plot_missing_values_per_country
 import plotly.express as px
+import geopandas as gpd
+import pycountry_convert as pc
+
 
 
 
@@ -252,7 +255,7 @@ plt.hist(df_agg['HDI_mean'], bins=20, color='skyblue', edgecolor='black')
 plt.title("Distribution de l'IDH moyen par pays")
 plt.xlabel("HDI moyen")
 plt.ylabel("Nombre de pays")
-plt.show()
+#plt.show()
 
 
 
@@ -266,7 +269,7 @@ fig = px.choropleth(
     title="Heatmap mondiale de l'IDH moyen par pays"
 )
 
-fig.show()
+#fig.show()
 
 df_hdi_time = hdi_analyzer.get_clean_df().groupby('date')['HDI'].mean().reset_index()
 plt.figure(figsize=(10,6))
@@ -274,6 +277,76 @@ sns.lineplot(data=df_hdi_time, x='date', y='HDI')
 plt.title("Évolution de l'IDH moyen mondial")
 plt.xlabel("Année")
 plt.ylabel("HDI")
-plt.tight_layout()  # pour que tout rentre bien
-plt.show() 
+plt.tight_layout()
+#plt.show() 
+
+
+# --- Top et Flop pays ---
+# df_agg contient : countryIsoCode, HDI_mean, HDI_min
+top10 = df_agg.nlargest(10, 'HDI_mean')
+flop10 = df_agg.nsmallest(10, 'HDI_mean')
+
+print("Top 10 pays par HDI moyen :\n", top10)
+print("\nFlop 10 pays par HDI moyen :\n", flop10)
+
+# Segmentation
+def categorize_hdi(value):
+    if value < 0.55:
+        return 'Faible'
+    elif value < 0.70:
+        return 'Moyen'
+    elif value < 0.80:
+        return 'Élevé'
+    else:
+        return 'Très élevé'
+
+df_agg['HDI_category'] = df_agg['HDI_mean'].apply(categorize_hdi)
+print("\nNombre de pays par catégorie HDI :")
+print(df_agg['HDI_category'].value_counts())
+
+
+
+def iso3_to_continent(iso3):
+    try:
+        country_alpha2 = pc.country_alpha3_to_country_alpha2(iso3)
+        continent_code = pc.country_alpha2_to_continent_code(country_alpha2)
+        continent_dict = {
+            'AF': 'Africa',
+            'AS': 'Asia',
+            'EU': 'Europe',
+            'NA': 'North America',
+            'SA': 'South America',
+            'OC': 'Oceania',
+            'AN': 'Antarctica'
+        }
+        return continent_dict.get(continent_code, 'Other')
+    except:
+        return 'Other'
+
+df_agg['Continent'] = df_agg['countryIsoCode'].apply(iso3_to_continent)
+
+# --- Étape 2 : Charger les frontières du monde ---
+world = gpd.read_file(gpd.datasets.get_path('naturalearth_lowres'))
+
+# On mappe ISO_A3 du shapefile avec notre HDI
+world_hdi = world.merge(df_agg, how='left', left_on='iso_a3', right_on='countryIsoCode')
+
+# --- Étape 3 : Créer des sous-figures pour chaque continent ---
+continents = world_hdi['Continent'].unique()
+n = len(continents)
+fig, axes = plt.subplots(1, n, figsize=(5*n, 6), constrained_layout=True)
+
+if n == 1:
+    axes = [axes]  # pour que ça fonctionne même avec 1 continent
+
+for ax, cont in zip(axes, continents):
+    subset = world_hdi[world_hdi['Continent'] == cont]
+    subset.plot(column='HDI_mean', cmap='YlGnBu', linewidth=0.8, ax=ax, edgecolor='0.8',
+                legend=True, missing_kwds={'color': 'lightgrey'})
+    ax.set_title(cont)
+    ax.axis('off')
+
+plt.suptitle("HDI moyen par pays et par continent", fontsize=16)
+plt.show()
+
 
