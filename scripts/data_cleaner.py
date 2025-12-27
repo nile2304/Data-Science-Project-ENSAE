@@ -2,20 +2,20 @@ import pandas as pd
 
 def clean_landlockedData(rawData):
     """
-        Cleans raw HTML table data of countries and their coastline lengths,
-        returning a structured DataFrame with country names and coastline lengths in kilometers.
+    Nettoie les données brutes du tableau HTML des pays et leurs longueurs de côtes,
+    en retournant un DataFrame structuré avec les noms des pays et les longueurs de côtes en kilomètres.
 
-        Parameters
-        ----------
-        rawData : list
-            A list of BeautifulSoup 'tr' elements representing rows of the HTML table.
+    Paramètres
+    ----------
+    rawData : list
+        Une liste d'éléments BeautifulSoup 'tr' représentant les lignes du tableau HTML.
 
-        Returns
-        -------
-        pandas.DataFrame
-        A cleaned DataFrame with two columns:
-        - 'Pays': the name of each country (string)
-        - 'Coastline(km)': the length of its coastline in kilometers (numeric)
+    Retours
+    -------
+    pandas.DataFrame
+    Un DataFrame nettoyé avec deux colonnes :
+    - 'Pays': le nom de chaque pays (chaîne de caractères)
+    - 'Coastline(km)': la longueur de sa côte en kilomètres (numérique)
     """
 
     # Regroupement des données dans un dictionnaire 
@@ -39,26 +39,26 @@ def clean_landlockedData(rawData):
     data_countries["Coastline"] = data_countries["Coastline"].apply(lambda x: x.replace(',',''))
     data_countries["Coastline"] = pd.to_numeric(data_countries["Coastline"])
     
-    return data_countries
+    return data_countries.dropna().reset_index(drop=True)
 
 
 def clean_ISOData(rawData):
     """
-    Cleans raw HTML table data of countries and their ISO codes,
-    returning a structured DataFrame with each country's name and its corresponding ISO codes.
+    Nettoie les données brutes du tableau HTML des pays et leurs codes ISO,
+    en retournant un DataFrame structuré avec les noms des pays et leurs codes ISO correspondants.
 
-    Parameters
+    Paramètres
     ----------
     rawData : list
-        A list of BeautifulSoup 'tr' elements representing rows of the HTML table.
+        Une liste d'éléments BeautifulSoup 'tr' représentant les lignes du tableau HTML.
 
-    Returns
+    Retours
     -------
     pandas.DataFrame
-    A cleaned DataFrame with the following columns:
-    - 'Pays': the name of each country
-    - 'ISO-2': the two-letter ISO country code
-    - 'ISO-3': the three-letter ISO country code
+    Un DataFrame nettoyé avec les colonnes suivantes :
+    - 'Pays': le nom de chaque pays
+    - 'ISO-2': le code ISO à deux lettres du pays
+    - 'ISO-3': le code ISO à trois lettres du pays
     """
 
     # Regroupement des données dans un dictionnaire 

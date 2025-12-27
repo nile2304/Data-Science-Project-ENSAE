@@ -8,23 +8,23 @@ import plotly.graph_objects as go
 
 def plot_missing_values_per_year(data,col,text="PIB Reel"):
     """
-    Plots the number of missing values per year for a specified column in a dataset.
+    Trace le nombre de valeurs manquantes par année pour une colonne spécifiée dans un ensemble de données.
 
-    This function groups the dataset by the 'date' column, counts the number of
-    missing values for the specified column in each year, and visualizes the result
-    as a bar chart. Each bar is annotated with the exact number of missing values.
+    Cette fonction groupe l'ensemble de données par la colonne 'date', compte le nombre de
+    valeurs manquantes pour la colonne spécifiée chaque année, et visualise le résultat
+    sous forme de graphique en barres. Chaque barre est annotée avec le nombre exact de valeurs manquantes.
 
-    Parameters
+    Paramètres
     ----------
     data : pandas.DataFrame
-        The input DataFrame containing a 'date' column and the column to analyze.
+        Le DataFrame d'entrée contenant une colonne 'date' et la colonne à analyser.
     col : str
-        The name of the column for which missing values should be counted per year.
+        Le nom de la colonne pour laquelle les valeurs manquantes doivent être comptées par année.
 
-    Returns
+    Retours
     -------
     None
-        The function displays a matplotlib bar plot but does not return any object.
+        La fonction affiche un graphique en barres matplotlib mais ne retourne aucun objet.
     """
 
     
@@ -45,30 +45,29 @@ def plot_missing_values_per_year(data,col,text="PIB Reel"):
     
 def plot_missing_values_per_country(data,col,treshold,text="PIB Reel"):
     """
-    Identifies and visualizes countries with an abnormal number of missing values for a given column.
+    Identifie et visualise les pays ayant un nombre anormal de valeurs manquantes pour une colonne donnée.
 
-    This function groups the dataset by country, counts missing values for the specified
-    column, and determines which countries exceed a missing-value threshold expressed as
-    a proportion of the total number of observations per country. It plots these countries
-    on a bar chart with annotated values and returns their names.
+    Cette fonction groupe l'ensemble de données par pays, compte les valeurs manquantes pour la colonne
+    spécifiée, et détermine quels pays dépassent un seuil de valeurs manquantes exprimé comme
+    une proportion du nombre total d'observations par pays. Elle trace ces pays sur un graphique
+    en barres avec des valeurs annotées et retourne leurs noms.
 
-    Parameters
+    Paramètres
     ----------
     data : pandas.DataFrame
-        The input DataFrame containing a 'country' column and the column to analyze.
+        Le DataFrame d'entrée contenant une colonne 'country' et la colonne à analyser.
     col : str
-        The name of the column for which missing values are evaluated.
+        Le nom de la colonne pour laquelle les valeurs manquantes sont évaluées.
     treshold : float
-        A value between 0 and 1 representing the proportion of missing values above which
-        a country is flagged as aberrant (e.g., 0.2 for 20%).
+        Une valeur entre 0 et 1 représentant la proportion de valeurs manquantes au-delà de laquelle
+        un pays est signalé comme aberrant (par exemple, 0.2 pour 20%).
 
-    Returns
+    Retours
     -------
     pandas.Index
-        An index containing the names of all countries whose missing-value counts exceed
-        the specified threshold.
+        Un index contenant les noms de tous les pays dont le nombre de valeurs manquantes dépasse
+        le seuil spécifié.
     """
-
 
     subset_data = data.groupby(["country"])[col]
     missing_values = subset_data.apply(lambda x: x.isna().sum())
@@ -91,21 +90,21 @@ def plot_missing_values_per_country(data,col,treshold,text="PIB Reel"):
 
 def plot_world_PIB(PIB_data):
     """
-    Plots the total world GDP over time using the provided GDP data.
+    Trace le PIB total mondial au fil du temps en utilisant les données de PIB fournies.
 
-    This function aggregates the GDP data by year, sums the GDP values for all countries,
-    and visualizes the total world GDP as a line plot.
+    Cette fonction agrège les données de PIB par année, additionne les valeurs de PIB pour tous les pays,
+    et visualise le PIB mondial total sous forme de graphique linéaire.
 
-    Parameters
+    Paramètres
     ----------
     PIB_data : pandas.DataFrame
-        A DataFrame containing 'date' and 'PIB' columns, where 'date' represents years
-        and 'PIB' represents the GDP values for various countries.
+        Un DataFrame contenant les colonnes 'date' et 'PIB', où 'date' représente les années
+        et 'PIB' représente les valeurs de PIB pour différents pays.
 
-    Returns
+    Retours
     -------
     None
-        The function displays a matplotlib line plot but does not return any object.
+        La fonction affiche un graphique linéaire matplotlib mais ne retourne aucun objet.
     """
 
     world_PIB = PIB_data.groupby("date")["PIB"].sum()
@@ -118,6 +117,21 @@ def plot_world_PIB(PIB_data):
     plt.show()
 
 def plot_PIB_quantile(PIB_data):
+    """
+    Trace le PIB moyen par quantiles au fil du temps.
+    Cette fonction divise les données de PIB en 20 quantiles et visualise comment le PIB moyen
+    dans chaque quantile évolue au fil du temps. Elle affiche également le PIB moyen global
+    comme ligne de référence.
+
+    :param PIB_data: pandas.DataFrame
+        DataFrame contenant les données de PIB avec les colonnes:
+        - 'PIB': Valeurs de PIB à quantifier
+        - 'date': Années ou périodes de temps pour l'axe des x
+        
+    :return: None
+        Affiche une figure matplotlib avec plusieurs lignes de quantiles et une ligne de moyenne globale.
+        Chaque quantile est étiqueté sur le côté droit du graphique avec sa couleur de ligne correspondante.
+    """
 
     quantiles = pd.qcut(PIB_data['PIB'], q=20, labels=False)
 
@@ -145,8 +159,26 @@ def plot_PIB_quantile(PIB_data):
     plt.title('Average GDP by Quantiles Over Time')
     plt.show()
 
-def plot_PIB_top_quantile_countries(PIB_data,chosen_quantile=19):
+def plot_PIB_top_quantile_countries(PIB_data, chosen_quantile=19):
+    """
+    Trace l'évolution temporelle du PIB des pays appartenant à un quantile supérieur donné.
 
+    - Découpe la distribution du PIB en 20 quantiles.
+    - Filtre les pays du quantile `chosen_quantile`.
+    - Trace la trajectoire PIB(date) pour chaque pays.
+    - Affiche la liste des pays sélectionnés.
+
+    Paramètres
+    ----------
+    PIB_data : DataFrame
+        Doit contenir : `country`, `date`, `PIB`.
+    chosen_quantile : int, défaut=19
+        Quantile ciblé (0 = plus bas, 19 = 20ᵉ quantile).
+
+    Retour
+    ------
+    None
+    """
     quantiles = pd.qcut(PIB_data['PIB'], q=20, labels=False)
 
     data = pd.DataFrame({
@@ -161,22 +193,44 @@ def plot_PIB_top_quantile_countries(PIB_data,chosen_quantile=19):
     for country in top_decile_data['country'].unique():
         country_data = top_decile_data[top_decile_data['country'] == country]
         plt.plot(country_data['year'], country_data['CG_debt'], label=country)
+
     plt.xlabel('Year')
     plt.ylabel('PIB')
     plt.title(f'Evolution of PIB for Countries in the {chosen_quantile+1}th Decile')
     plt.show()
 
-    print(f'Countries in the {chosen_quantile+1}th-decile: {data[data['quantiles'] == chosen_quantile]['country'].unique()}')
-    
-def visualize_economicPower_clusters(weightCountry_data, width=900, height=500):
+    print(f'Countries in the {chosen_quantile+1}th-decile: {data[data["quantiles"] == chosen_quantile]["country"].unique()}')
 
+
+def visualize_economicPower_clusters(weightCountry_data, width=900, height=500):
+    """
+    Classe les pays en 4 clusters de puissance économique et affiche une carte choroplèthe.
+
+    - Applique K-Means sur `avgWeightCountry`.
+    - Réordonne les clusters par puissance croissante.
+    - Génère une carte mondiale interactive.
+
+    Paramètres
+    ----------
+    weightCountry_data : DataFrame
+        Doit contenir : `country`, `avgWeightCountry`.
+    width : int, défaut=900
+        Largeur de la carte.
+    height : int, défaut=500
+        Hauteur de la carte.
+
+    Retour
+    ------
+    DataFrame
+        Données avec labels de clusters (`Power`).
+    """
     data = weightCountry_data.copy()
 
     kmeans = KMeans(n_clusters=4, random_state=42)
     data["Power"] = kmeans.fit_predict(data[["avgWeightCountry"]])
 
     cluster_order = data.groupby("Power")["avgWeightCountry"].mean().sort_values().index
-    mapping = {cluster_order[0]: 0, cluster_order[1]: 1, cluster_order[2]: 2, cluster_order[3]: 3}
+    mapping = {cluster_order[i]: i for i in range(4)}
     data["Power"] = data["Power"].map(mapping)
 
     fig = px.choropleth(
@@ -189,22 +243,32 @@ def visualize_economicPower_clusters(weightCountry_data, width=900, height=500):
     )
 
     fig.update_layout(
-        geo=dict(
-            showcoastlines=True,
-            coastlinecolor="Black",
-            showland=True,
-            landcolor="white",
-        ),
+        geo=dict(showcoastlines=True, coastlinecolor="Black", showland=True, landcolor="white"),
         width=width,
         height=height
     )
 
     fig.show()
-
     return data
 
-def visualize_trade_clusters(netExportators_data, width=900, height=500):
 
+def visualize_trade_clusters(netExportators_data, width=900, height=500):
+    """
+    Affiche une carte mondiale de classification binaire des pays exportateurs nets.
+
+    Paramètres
+    ----------
+    netExportators_data : DataFrame
+        Doit contenir : `country`, `netExportateur` (valeur continue ou binaire).
+    width : int, défaut=900
+        Largeur de la carte.
+    height : int, défaut=500
+        Hauteur de la carte.
+
+    Retour
+    ------
+    None
+    """
     fig = px.choropleth(
         netExportators_data,
         locations=netExportators_data["country"],
@@ -213,21 +277,33 @@ def visualize_trade_clusters(netExportators_data, width=900, height=500):
         color_continuous_scale=["red", "green"],
         title="World Classification Map by Exportators Countries"
     )
+
     fig.update_layout(
-        geo=dict(
-            showcoastlines=True,
-            coastlinecolor="Black",
-            showland=True,
-            landcolor="white",
-        ),
+        geo=dict(showcoastlines=True, coastlinecolor="Black", showland=True, landcolor="white"),
         width=width,
         height=height
     )
 
     fig.show()
 
-def visualize_landlocked_countries(landlocked_data, width=900, height=500):
 
+def visualize_landlocked_countries(landlocked_data, width=900, height=500):
+    """
+    Génère une carte mondiale indiquant si un pays est enclavé ou non.
+
+    Paramètres
+    ----------
+    landlocked_data : DataFrame
+        Doit contenir : `country`, `isLandlocked` (0/1 ou False/True).
+    width : int, défaut=900
+        Largeur de la carte.
+    height : int, défaut=500
+        Hauteur de la carte.
+
+    Retour
+    ------
+    None
+    """
     fig = px.choropleth(
         landlocked_data,
         locations=landlocked_data["country"],
@@ -238,27 +314,43 @@ def visualize_landlocked_countries(landlocked_data, width=900, height=500):
     )
 
     fig.update_layout(
-        geo=dict(
-            showcoastlines=True,
-            coastlinecolor="Black",
-            showland=True,
-            landcolor="white",
-        ),
+        geo=dict(showcoastlines=True, coastlinecolor="Black", showland=True, landcolor="white"),
         width=width,
         height=height
     )
+
     fig.show()
 
-def visualize_HDI_clusters(HDI_data, width=900, height=500):
 
+def visualize_HDI_clusters(HDI_data, width=900, height=500):
+    """
+    Segmente les pays en 3 clusters selon leur IDH et affiche une carte choroplèthe.
+
+    - Applique K-Means sur la valeur IDH.
+    - Réordonne les clusters du plus élevé au plus faible.
+    - Affiche la carte interactive.
+
+    Paramètres
+    ----------
+    HDI_data : DataFrame
+        Doit contenir : `country`, `HDI_mean`.
+    width : int, défaut=900
+        Largeur de la carte.
+    height : int, défaut=500
+        Hauteur de la carte.
+
+    Retour
+    ------
+    None
+    """
     data = HDI_data.copy()
 
     kmeans = KMeans(n_clusters=3, random_state=42)
-    data["HDI_mean"] = kmeans.fit_predict(data[["HDI_mean"]])
+    data["cluster"] = kmeans.fit_predict(data[["HDI_mean"]])
 
-    cluster_order = data.groupby("HDI_mean")["HDI_mean"].mean().sort_values(ascending=False).index
-    mapping = {cluster_order[0]: 0, cluster_order[1]: 1, cluster_order[2]: 2}
-    data["HDI_cluster"] = data["HDI_mean"].map(mapping)
+    cluster_order = data.groupby("cluster")["HDI_mean"].mean().sort_values(ascending=False).index
+    mapping = {cluster_order[i]: i for i in range(3)}
+    data["HDI_cluster"] = data["cluster"].map(mapping)
 
     fig = px.choropleth(
         data,
@@ -270,12 +362,7 @@ def visualize_HDI_clusters(HDI_data, width=900, height=500):
     )
 
     fig.update_layout(
-        geo=dict(
-            showcoastlines=True,
-            coastlinecolor="Black",
-            showland=True,
-            landcolor="white",
-        ),
+        geo=dict(showcoastlines=True, coastlinecolor="Black", showland=True, landcolor="white"),
         width=width,
         height=height
     )
@@ -284,95 +371,111 @@ def visualize_HDI_clusters(HDI_data, width=900, height=500):
 
 
 def animated_economicPower_map(weightCountry_data, width=900, height=500):
+    """
+    Produit une carte mondiale animée montrant l'évolution des clusters de puissance économique.
 
+    - Applique K-Means (k=4) séparément par année sur `weightCountry`.
+    - Réordonne les clusters par puissance croissante.
+    - Concatène les données et génère la carte animée.
+
+    Paramètres
+    ----------
+    weightCountry_data : DataFrame
+        Doit contenir : `country`, `date`, `weightCountry`.
+    width : int, défaut=900
+        Largeur de la carte.
+    height : int, défaut=500
+        Hauteur de la carte.
+
+    Retour
+    ------
+    None
+    """
     data = weightCountry_data.copy()
-    
-    # Calculer les clusters par année
-    clustered_data = []
-    for date, group in data.groupby("date"):
+    clustered = []
+
+    for year, group in data.groupby("date"):
         kmeans = KMeans(n_clusters=4, random_state=42)
-        group = group.copy()
-        group["Power"] = kmeans.fit_predict(group[["weightCountry"]])
-        
-        # Réordonner les clusters de manière croissante
-        cluster_order = group.groupby("Power")["weightCountry"].mean().sort_values().index
-        mapping = {cluster_order[i]: i for i in range(4)}
-        group["Power"] = group["Power"].map(mapping)
-        
-        clustered_data.append(group)
-    
-    data_clustered = pd.concat(clustered_data)
-    
-    # Carte animée
+        g = group.copy()
+        g["Power"] = kmeans.fit_predict(g[["weightCountry"]])
+
+        order = g.groupby("Power")["weightCountry"].mean().sort_values().index
+        mapping = {order[i]: i for i in range(4)}
+        g["Power"] = g["Power"].map(mapping)
+
+        clustered.append(g)
+
+    df_clustered = pd.concat(clustered)
+
     fig = px.choropleth(
-        data_clustered,
+        df_clustered,
         locations="country",
         locationmode="ISO-3",
         color="Power",
         animation_frame="date",
-        color_continuous_scale=["red", "orange", "blue", "green"],
-        title="World Classification Map by Economic Power over Time",
+        title="Economic Power (clusters) over Time",
         range_color=(0, 3)
     )
-    
+
     fig.update_layout(
-        geo=dict(
-            showcoastlines=True,
-            coastlinecolor="Black",
-            showland=True,
-            landcolor="white",
-        ),
+        geo=dict(showcoastlines=True, coastlinecolor="Black", showland=True, landcolor="white"),
         width=width,
         height=height
     )
-    
+
     fig.show()
 
 
 def animated_HDI_map(HDI_data, width=900, height=500):
+    """
+    Génère une carte mondiale animée montrant l'évolution des clusters IDH dans le temps.
 
-    data = HDI_data.copy()
-    
-    # Calculer les clusters par année
-    clustered_data = []
-    for date, group in data.groupby("date"):
+    Paramètres
+    ----------
+    HDI_data : DataFrame
+        Doit contenir : `country`, `date`, `HDI`.
+    width : int, défaut=900
+        Largeur de la carte.
+    height : int, défaut=500
+        Hauteur de la carte.
+
+    Retour
+    ------
+    None
+    """
+    clustered = []
+
+    for year, group in HDI_data.groupby("date"):
         kmeans = KMeans(n_clusters=3, random_state=42)
-        group = group.copy()
-        group["Scale"] = kmeans.fit_predict(group[["HDI"]])
-        
-        # Réordonner les clusters de manière croissante
-        cluster_order = group.groupby("Scale")["HDI"].mean().sort_values().index
-        mapping = {cluster_order[i]: i for i in range(3)}
-        group["Scale"] = group["Scale"].map(mapping)
-        
-        clustered_data.append(group)
-    
-    data_clustered = pd.concat(clustered_data)
-    
-    # Carte animée
+        g = group.copy()
+        g["Scale"] = kmeans.fit_predict(g[["HDI"]])
+
+        order = g.groupby("Scale")["HDI"].mean().sort_values().index
+        mapping = {order[i]: i for i in range(3)}
+        g["Scale"] = g["Scale"].map(mapping)
+
+        clustered.append(g)
+
+    df_clustered = pd.concat(clustered)
+
     fig = px.choropleth(
-        data_clustered,
+        df_clustered,
         locations="country",
         locationmode="ISO-3",
         color="Scale",
         animation_frame="date",
-        color_continuous_scale=["red", "orange", "green"],
-        title="World Classification Map by HDI over Time",
+        title="HDI (clusters) over Time",
         range_color=(0, 2)
     )
-    
+
     fig.update_layout(
-        geo=dict(
-            showcoastlines=True,
-            coastlinecolor="Black",
-            showland=True,
-            landcolor="white",
-        ),
+        geo=dict(showcoastlines=True, coastlinecolor="Black", showland=True, landcolor="white"),
         width=width,
         height=height
     )
-    
+
     fig.show()
+
     
 
 def plot_world_map(dataframe, y_col, data_name, width=900, height=500):

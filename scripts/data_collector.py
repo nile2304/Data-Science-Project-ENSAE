@@ -8,6 +8,17 @@ import numpy as np
 class WorldBankData:
     """
     Classe pour récupérer et visualiser des indicateurs World Bank pour un ou plusieurs pays.
+    
+    Cette classe permet de :
+    - Récupérer des données économiques depuis l'API World Bank
+    - Gérer les données manquantes avec des fichiers de secours locaux
+    - Visualiser les indicateurs avec des graphiques personnalisés
+    
+    Indicateurs disponibles :
+    - PIB : Produit Intérieur Brut
+    - Chômage : Taux de chômage
+    - Exportations : Exportations de biens et services
+    - Importations : Importations de biens et services
     """
 
     INDICATEURS = {
@@ -101,17 +112,17 @@ class WorldBankData:
 
 def get_rawlandlockedCountries(url):
     """
-    Scrapes a Wikipedia table containing countries and their coastline lengths.
+    Récupère un tableau Wikipedia contenant les pays et la longueur de leurs côtes.
 
-    Parameters
+    Paramètres
     ----------
     url : str
-        The URL of the Wikipedia page containing the table of countries and their coastline lengths.
+        L'URL de la page Wikipedia contenant le tableau des pays et la longueur de leurs côtes.
 
-    Returns
+    Retours
     -------
     list
-    A list of BeautifulSoup 'tr' elements representing rows of the HTML table.
+        Une liste d'éléments BeautifulSoup 'tr' représentant les lignes du tableau HTML.
     """
     
     requests_text = requests.get(
@@ -128,19 +139,18 @@ def get_rawlandlockedCountries(url):
     return rows
 
 def get_ISOcodes(url):
-
     """
-    Scrapes a Wikipedia table containing countries and their ISO codes.
+    Récupère un tableau Wikipedia contenant les pays et leurs codes ISO.
 
-    Parameters
+    Paramètres
     ----------
     url : str
-        The URL of the Wikipedia page containing the table of countries and their ISO codes.
+        L'URL de la page Wikipedia contenant le tableau des pays et leurs codes ISO.
 
-    Returns
+    Retours
     -------
-    list:
-        A list of BeautifulSoup 'tr' elements representing rows of the HTML table.
+    list
+        Une liste d'éléments BeautifulSoup 'tr' représentant les lignes du tableau HTML.
     """
 
     requests_text = requests.get(

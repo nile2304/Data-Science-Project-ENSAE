@@ -2,18 +2,20 @@ import pandas as pd
 
 def check_missing_values(data,col):
     """
-    Checks and prints the number and percentage of missing values in the specified column of the DataFrame,
-    along with the range of years and number of unique countries represented in the data.
-    Parameters
+    Vérifie et affiche le nombre et le pourcentage de valeurs manquantes dans la colonne spécifiée du DataFrame,
+    ainsi que la plage de dates et le nombre de pays uniques représentés dans les données.
+    
+    Paramètres
     ----------
     data : pandas.DataFrame
-        The DataFrame containing the data.
+        Le DataFrame contenant les données.
     col : str
-    The name of the column to check for missing values.
-    Returns
+        Le nom de la colonne à vérifier pour les valeurs manquantes.
+    
+    Retours
     -------
     None
-        """
+    """
     
     missing_vals_number = data.isna().sum()[col]
 
@@ -31,21 +33,21 @@ def check_missing_values(data,col):
 
 def impute_missing_values(data,col,method="mean"):
     """
-    Imputes missing values in the specified column of the DataFrame using the specified method.
+    Impute les valeurs manquantes dans la colonne spécifiée du DataFrame en utilisant la méthode spécifiée.
 
-    Parameters
+    Paramètres
     ----------
     data : pandas.DataFrame
-        The DataFrame containing the data.
+        Le DataFrame contenant les données.
     col : str
-        The name of the column in which to impute missing values.
+        Le nom de la colonne dans laquelle imputer les valeurs manquantes.
     method : str, optional
-        The method to use for imputation. Default is "mean". Other options could be "median", "ffill", "bfill".
+        La méthode à utiliser pour l'imputation. Par défaut "mean". Autres options possibles : "median", "ffill", "bfill".
 
-    Returns
+    Retours
     -------
     pandas.DataFrame
-        The DataFrame with missing values imputed.
+        Le DataFrame avec les valeurs manquantes imputées.
     """
     
     if method == "mean":
