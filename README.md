@@ -41,9 +41,13 @@ Nous cherchons à comprendre comment ces facteurs influencent la résilience éc
 
 Nous nous sommes reposés de façon essentielle sur les sources suivantes :  
 
-- Wikipédia (pour les codes ISO des pays et les pays enclavés)  
-- API de la Banque mondiale (pour le PIB réel, les importations, les exportations)  
+- Wikipédia (pour les codes ISO des pays et les pays enclavés)
+    [Codes ISO](https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes)
+    [Pays enclavés](https://en.wikipedia.org/wiki/List_of_countries_by_length_of_coastline)
+- API de la Banque mondiale (pour le PIB réel, les importations, les exportations)
+    (Source : [Banque mondiale](https://data.worldbank.org/indicator/NY.GDP.MKTP.KD))
 - United Nations Development Programme (pour l’IDH)
+    (Source : [UNDP](https://hdr.undp.org/data-center/human-development-index#/indicies/HDI))
 
 Les données sont récupérées autant que possible via les API publiques de ces sources. Et si ce n'est pas possible on stocke le dataset dans notre projet.
 
@@ -56,3 +60,4 @@ Notre production est essentiellement localisée dans le fichier `main.ipynb` qui
 Le dossier `data/` contient une copie locale d’une partie des données pour pallier les indisponibilités d’API.  
 Le dossier `scripts/` contient des fonctions utilitaires pour rendre le code plus lisible et maintenable.  
 Le fichier `requirements.txt` permet l’installation des packages nécessaires via pip.
+Le dossier `ne_110m_admin_0_countries` contient des fichiers nécessaires pour l'affichage de cartes avec geopandas.
