@@ -5,7 +5,6 @@ import plotly.express as px
 from sklearn.cluster import KMeans
 import plotly.graph_objects as go
 
-
 def plot_missing_values_per_year(data,col,text="PIB Reel"):
     """
     Trace le nombre de valeurs manquantes par année pour une colonne spécifiée dans un ensemble de données.
@@ -26,7 +25,6 @@ def plot_missing_values_per_year(data,col,text="PIB Reel"):
     None
         La fonction affiche un graphique en barres matplotlib mais ne retourne aucun objet.
     """
-
     
     missing_values = data.groupby(["date"])[col].apply(lambda x: x.isna().sum())
 
@@ -412,6 +410,7 @@ def animated_economicPower_map(weightCountry_data, width=900, height=500):
         locations="country",
         locationmode="ISO-3",
         color="Power",
+        color_continuous_scale=["red", "orange", "blue", "green"],
         animation_frame="date",
         title="Economic Power (clusters) over Time",
         range_color=(0, 3)
@@ -480,26 +479,27 @@ def animated_HDI_map(HDI_data, width=900, height=500):
 
 def plot_world_map(dataframe, y_col, data_name, width=900, height=500):
     """
-    Creates an animated world map showing the distribution of a specific data column across countries and years.
-    Parameters:
-    - dataframe (DataFrame): The input dataframe containing country-level data.
-    - y_col (str): The column to be visualized on the map (e.g., 'HDI')
-    - data_name (str): A label for the data being visualized (e.g., 'IDH' )
-    - width (int): The width of the map figure.
-    - height (int): The height of the map figure.
-    Notes:
-    - Assumes the dataframe has columns 'country_code', 'year', and the specified y_col.
+    Crée une carte mondiale animée montrant la distribution d'une colonne de données spécifique
+    à travers les pays et les années.
+    
+    Paramètres:
+    - dataframe (DataFrame): Le dataframe d'entrée contenant les données au niveau des pays.
+    - y_col (str): La colonne à visualiser sur la carte (par exemple, 'HDI')
+    - data_name (str): Une étiquette pour les données visualisées (par exemple, 'IDH')
+    
+    Remarques:
+    - Suppose que le dataframe contient les colonnes 'country_code', 'year' et la colonne y_col spécifiée.
     """
     min_value = dataframe[y_col].min()
     max_value = dataframe[y_col].max()
     # Création d'une carte du monde avec Plotly
     fig = px.choropleth(dataframe, 
-                        locations='country_code',
+                        locations='country',
                         color=y_col,
-                        hover_name='country_code',
-                        color_continuous_scale="turbo",
+                        hover_name='country',
+                        color_continuous_scale=["red", "orange","green"],
                         projection='natural earth',
-                        animation_frame='year',
+                        animation_frame='date',
                         range_color=(min_value, max_value))
     fig.update_coloraxes(colorbar_title_text='')
     # Mise en page des sous-plots pour les barres d'histogramme
@@ -508,7 +508,7 @@ def plot_world_map(dataframe, y_col, data_name, width=900, height=500):
         xaxis3=dict(domain=[0.55, 1], anchor='y3'),
         yaxis2=dict(domain=[0, 1], anchor='x2'),
         yaxis3=dict(domain=[0, 1], anchor='x3'),
-        title_text= f'{data_name} par pays, 1990-2021',
+        title_text= f'{data_name} par pays, 1990-2023',
     )
     # Ajout d'un slider pour choisir l'année
     slider = go.layout.Slider(
@@ -527,8 +527,8 @@ def plot_world_map(dataframe, y_col, data_name, width=900, height=500):
     sliders=[
         {
             "steps": [
-                {"args": [[f"{year}"], {"frame": {"duration": 500, "redraw": True}, "mode": "immediate", "transition": {"duration": 500}}], "label": f"{year}", "method": "animate"} 
-                for year in sorted(dataframe['year'].unique())
+                {"args": [[f"{date}"], {"frame": {"duration": 500, "redraw": True}, "mode": "immediate", "transition": {"duration": 500}}], "label": f"{date}", "method": "animate"} 
+                for date in sorted(dataframe['date'].unique())
             ],
             "active": 0,
             "yanchor": "top",

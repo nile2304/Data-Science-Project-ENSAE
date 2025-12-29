@@ -16,14 +16,12 @@ class WorldBankData:
     
     Indicateurs disponibles :
     - PIB : Produit Intérieur Brut
-    - Chômage : Taux de chômage
     - Exportations : Exportations de biens et services
     - Importations : Importations de biens et services
     """
 
     INDICATEURS = {
         "PIB": "NY.GDP.MKTP.KD",
-        "Chomage": "SL.UEM.TOTL.ZS",
         "Exportations": "NE.EXP.GNFS.ZS",
         "Importations": "NE.IMP.GNFS.ZS"
     }
@@ -31,8 +29,7 @@ class WorldBankData:
     BACKUP_PATHS = {
         "PIB": "data/PIB_data.csv",
         "Importations": "data/Importations_data.csv",
-        "Exportations": "data/Exportations_data.csv",
-        "Chomage": "data/Chomage_data.csv"
+        "Exportations": "data/Exportations_data.csv"
     }
 
     def __init__(self):
@@ -42,14 +39,16 @@ class WorldBankData:
         """
         Récupère un indicateur pour plusieurs pays.
         """
+
         if indicator_name not in self.INDICATEURS:
             raise ValueError(f"Indicateur inconnu. Choisir parmi : {list(self.INDICATEURS.keys())}")
 
         code = self.INDICATEURS[indicator_name]
         countries_str = ";".join([c.upper() for c in countries])
         url = f"https://api.worldbank.org/v2/country/{countries_str}/indicator/{code}?date={start}:{end}&format=json&per_page=20000"
+
         try:
-            response = requests.get(url)
+            response = requests.get(url, headers={"User-Agent": "Python for data science tutorial"})
             if response.status_code != 200:
                 raise ConnectionError(f"Erreur API : {response.status_code}")
 
@@ -58,30 +57,28 @@ class WorldBankData:
             df = pd.DataFrame(data_json)[["country", "date", "value"]]
             df["country"] = df["country"].apply(lambda x: x["value"])
             df["date"] = df["date"].astype(int)
-            
             df.rename(columns={"value":indicator_name},inplace=True)
-            
+
             self.data[indicator_name] = df
             
             return df
         
         except Exception as e:
             print(f"Erreur lors de la récupération des données : {e}")
-
-            # Path to backup
             backup_path = self.BACKUP_PATHS.get(indicator_name)
 
             if not backup_path:
                 raise FileNotFoundError(f"Impossible de charger les données locales pour {indicator_name}.")
 
-            # Load backup CSV
             df = pd.read_csv(backup_path)
             self.data[indicator_name] = df
             df.drop(columns=['Unnamed: 0'], inplace=True)
             print(f" Données locales chargées depuis {backup_path}")
 
             return df
+        
     sns.set_style("whitegrid")
+    
     def plot(self, indicator_name, title=None, figsize=(10,6), colors=None):
         """
         Trace un indicateur pour tous les pays chargés.

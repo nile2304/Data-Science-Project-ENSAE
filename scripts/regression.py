@@ -37,7 +37,7 @@ def perform_regression(data, x_cols, y_col, method='HC3', plotnum=0):
     y = df[y_col]
 
     # Ajustement du modèle
-    model = sm.OLS(y, X).fit(cov_type=method)
+    model = sm.OLS(y, X).fit(method='qr',cov_type=method)
 
     # Affichage du résumé dans un subplot
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 6), gridspec_kw={'width_ratios': [7, 5]})
@@ -56,14 +56,14 @@ def perform_regression(data, x_cols, y_col, method='HC3', plotnum=0):
 
     # Calcul des coefficients standardisés pour interprétation relative
     df_std = df.copy()
-    for col in x_cols + [y_col]:
+    for col in x_cols:
         df_std[col] = (df_std[col] - df_std[col].mean()) / df_std[col].std()
     X_std = sm.add_constant(df_std[x_cols])
     y_std = df_std[y_col]
-    model_std = sm.OLS(y_std, X_std).fit(cov_type=method)
+    model_std = sm.OLS(y_std, X_std).fit(method='qr',cov_type=method)
 
     print("\nCoefficients standardisés :")
     print(pd.DataFrame({'Variable': ['const'] + x_cols,
                         'Coeff_std': model_std.params.values}))
 
-    return model
+    return

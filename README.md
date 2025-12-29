@@ -41,13 +41,13 @@ Nous cherchons à comprendre comment ces facteurs influencent la résilience éc
 
 Nous nous sommes reposés de façon essentielle sur les sources suivantes :  
 
-- Wikipédia (pour les codes ISO des pays et les pays enclavés)
+- Wikipédia (pour les codes ISO des pays et les pays enclavés que nous avons récupéré par scraping)
     [Codes ISO](https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes)
     [Pays enclavés](https://en.wikipedia.org/wiki/List_of_countries_by_length_of_coastline)
 - API de la Banque mondiale (pour le PIB réel, les importations, les exportations)
-    (Source : [Banque mondiale](https://data.worldbank.org/indicator/NY.GDP.MKTP.KD))
+    [Banque mondiale](https://data.worldbank.org/indicator/NY.GDP.MKTP.KD)
 - United Nations Development Programme (pour l’IDH)
-    (Source : [UNDP](https://hdr.undp.org/data-center/human-development-index#/indicies/HDI))
+    [UNDP](https://hdr.undp.org/data-center/human-development-index#/indicies/HDI)
 
 Les données sont récupérées autant que possible via les API publiques de ces sources. Et si ce n'est pas possible on stocke le dataset dans notre projet.
 
@@ -59,5 +59,9 @@ Notre production est essentiellement localisée dans le fichier `main.ipynb` qui
 
 Le dossier `data/` contient une copie locale d’une partie des données pour pallier les indisponibilités d’API.  
 Le dossier `scripts/` contient des fonctions utilitaires pour rendre le code plus lisible et maintenable.  
-Le fichier `requirements.txt` permet l’installation des packages nécessaires via pip.
+Le fichier `requirements.txt` permet l’installation des packages nécessaires via pip. 
 Le dossier `ne_110m_admin_0_countries` contient des fichiers nécessaires pour l'affichage de cartes avec geopandas.
+
+## 5. Notes sur l'utilisation
+
+Par souci avec l'API de la WorldBank qui aléatoirement n'envoie pas des données relatives à certains pays, nous avons vu notre analyse de corrélation se rendre non reproductible. Pour la reproductibilité nous avons donc utilisé nos données backup. Toutes les analyses du document sont donc faites avec ces données backups. Pour assurer des résultats reproductibles il faut donc exécuter le notebook **HORS CONNEXION** sans quoi, les résultats varieront dû au défaut de l'API. Si l'exécution est réalisée en ligne il ne faudrait donc pas s'étonner de remarquer sur les graphiques des chiffres différents de ceux avec lesquels nous avons fait les analyses.
