@@ -59,7 +59,7 @@ Notre production est essentiellement localisée dans le fichier `main.ipynb` qui
 
 Le dossier `data/` contient une copie locale d’une partie des données pour pallier les indisponibilités d’API.  
 Le dossier `scripts/` contient des fonctions utilitaires pour rendre le code plus lisible et maintenable.  
-Le fichier `requirements.txt` permet l’installation des packages nécessaires via pip. 
+Le fichier `requirements.txt` permet l’installation des packages nécessaires via pip.  
 Le dossier `ne_110m_admin_0_countries` contient des fichiers nécessaires pour l'affichage de cartes avec geopandas.
 
 ## 5. Notes sur l'utilisation
