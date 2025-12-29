@@ -64,4 +64,4 @@ Le dossier `ne_110m_admin_0_countries` contient des fichiers nécessaires pour l
 
 ## 5. Notes sur l'utilisation
 
-Par souci avec l'API de la WorldBank qui aléatoirement n'envoie pas des données relatives à certains pays, nous avons vu notre analyse de corrélation se rendre non reproductible. Pour la reproductibilité nous avons donc utilisé nos données backup. Toutes les analyses du document sont donc faites avec ces données backups. Pour assurer des résultats reproductibles il faut donc exécuter le notebook **HORS CONNEXION** sans quoi, les résultats varieront dû au défaut de l'API. Si l'exécution est réalisée en ligne il ne faudrait donc pas s'étonner de remarquer sur les graphiques des chiffres différents de ceux avec lesquels nous avons fait les analyses.
+Pour tester l'efficacité du code selon que l'on soit en ligne ou hors ligne, il faut juste exécuter le `main.ipynb` dans les deux conditions sus-citées.
