@@ -39,20 +39,14 @@ def perform_regression(data, x_cols, y_col, method='HC3', plotnum=0):
     # Ajustement du modèle
     model = sm.OLS(y, X).fit(method='qr',cov_type=method)
 
-    # Affichage du résumé dans un subplot
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 6), gridspec_kw={'width_ratios': [7, 5]})
-    ax1.text(0, 0.5, model.summary().as_text(), va='center', ha='left', fontsize=9, family='monospace')
-    ax1.axis('off')
-
-    # Scatter plot + régression pour une variable explicative choisie
-    sns.scatterplot(x=df[x_cols[plotnum]], y=y, ax=ax2, color='skyblue', s=50)
-    sns.regplot(x=df[x_cols[plotnum]], y=y, scatter=False, ax=ax2, color='sandybrown', line_kws={'lw':2})
-    ax2.set_title(f'{y_col} vs {x_cols[plotnum]}')
-    ax2.set_xlabel(x_cols[plotnum])
-    ax2.set_ylabel(y_col)
-
+    # Affichage des résultats
+    fig, ax = plt.subplots(figsize=(8, 4))
+    ax.text(0, 0.5, model.summary().as_text(), va='top', ha='center', fontsize=10, family='monospace')
+    ax.axis('off')
     plt.tight_layout()
     plt.show()
+
+
 
     # Calcul des coefficients standardisés pour interprétation relative
     df_std = df.copy()
